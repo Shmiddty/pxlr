@@ -1,33 +1,43 @@
 import React, { Fragment } from 'react';
-import { MIRROR } from '../store/config/reducer';
+import { MIRROR } from '../store/config/tools';
+import { setMirror } from '../store/config/actions';
 import { connect } from 'react-redux';
 
+// TODO: might want to do this dynamically like the others
 export default connect(
   state => ({
     mirror: state.config.mirror
   }),
   dispatch => ({
-    updateMirror: mirror => dispatch({ type: "mirror", payload: mirror })
+    setMirror: mirror => dispatch(setMirror(mirror))
   })
-)(({ mirror, updateMirror }) => (
+)(({ mirror, setMirror }) => (
   <Fragment>
-    <label className="tool-mirror-vertical">
+    <label 
+      data-key="c"
+      className="toggle mirror-vertical"
+    >
       <input 
         type="checkbox" 
         name="mirror-vertical" 
         checked={mirror & MIRROR.VERTICAL}
-        onChange={() => updateMirror(MIRROR.VERTICAL)}
+        onChange={() => setMirror(MIRROR.VERTICAL)}
       />
       <span>Mirror Vertically</span>
+      <i className="mdi mdi-reflect-vertical" />
     </label>
-    <label className="tool-mirror-horizontal">
+    <label
+      data-key="v"
+      className="toggle mirror-horizontal"
+    >
       <input 
         type="checkbox" 
         name="mirror-horizontal"
         checked={mirror & MIRROR.HORIZONTAL}
-        onChange={() => updateMirror(MIRROR.HORIZONTAL)}
+        onChange={() => setMirror(MIRROR.HORIZONTAL)}
       />
       <span>Mirror Horizontally</span>
+      <i className="mdi mdi-reflect-horizontal" />
     </label>
   </Fragment>
 ));

@@ -2,16 +2,17 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import store from './store';
 
-import Modes from './components/Modes';
-import Toggles from './components/Toggles';
-import Tools from './components/Tools';
+import Keyboard from './components/Keyboard';
+import Canvas from './components/Canvas';
+import SideLength from './components/SideLength';
 
 export default function App(props) {
   return (
     <Provider store={store}>
-      <Modes />
-      <Toggles />
-      <Tools />
+      <Keyboard />
+      <span className="save-notice">(right click on the image to save it)</span>
+      <Canvas />
+      <SideLength />
     </Provider>
   );
 }

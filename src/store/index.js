@@ -1,26 +1,22 @@
 import { createStore, applyMiddleware } from "redux";
+import makePersistence from './redux-localStorage';
+//import logger from './redux-logger';
+
 import reducer from "./reducer";
+import keybindings from './keyboard/middleware';
 
-function makePersistence(key) {
-  function Persist(store) {
-    return next => action => {
-      const result = next(action);
-      
-      localStorage.setItem(key, JSON.stringify(store.getState()));
-      
-      return result;
-    };
-  }
+const defaultState = reducer(undefined, {});
 
-  return [
-    JSON.parse(localStorage.getItem(key)) || {},
-    Persist
-  ];
-}
+const [initialState, persist] = makePersistence(
+  "pxlr", 
+  defaultState
+);
 
-const [initialState, persist] = makePersistence("pxlr");
-
-const middleware = [persist]
+const middleware = [
+  //logger, 
+  keybindings, 
+  persist
+];
 
 export default createStore(
   reducer, 

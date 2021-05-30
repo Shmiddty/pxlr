@@ -6,9 +6,7 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html, body {
   height: 100%;
 }
 
@@ -54,4 +52,55 @@ b {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+body {
+  background: #333;
+  display: flex;
+}
+
+#root {
+  width: 720px;
+  margin: auto;
+  position: relative;
+}
+#root .save-notice {
+  font-size: 18px;
+  display: block;
+  text-align: center;
+  margin-top: -1.5em; /* TODO: more hacky overlays */
+  color: #fff7;
+  user-select:none;
+}
+#root .side-length {
+  position: absolute;
+  left: -1.25em;
+  bottom: 0;
+  height: 720px;
+  width: 720px;
+  color: #fff;
+  transform: rotate(-90deg);
+  font-size: 40px;
+  pointer-events: none;
+  display: flex;
+  user-select: none;
+}
+#root .side-length span {
+  margin: 0 .5em;
+}
+#root .side-length::before,
+#root .side-length::after {
+  content: ' ';
+  height: .25em;
+  display: inline-block;
+  border: solid 1px #fff;
+  border-width: 1px 0 0 0;
+  flex: 1 0 auto;
+  margin-top: .5em; 
+}
+#root .side-length::before {
+  border-left-width: 1px;
+}
+#root .side-length::after {
+  border-right-width: 1px;
 }

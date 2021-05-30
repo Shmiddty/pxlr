@@ -1,36 +1,56 @@
-import { modes } from './tools';
-
-export const MIRROR = {
-  NONE: 0,
-  VERTICAL: 2**0,
-  HORIZONTAL: 2**1,
-  BOTH: 2**2
-};
-
-export const MODE = modes.reduce((o, t, i) => {
-  o[t.toUpperCase()] = i;
-  return o;
-}, {});
+import { MIRROR, MODE, BRUSH, brushes } from './tools';
+import { types } from './actions';
 
 const initialState = {
   mode: MODE.PENCIL,
-  mirror: MIRROR.NONE 
+  brush: BRUSH.SQUARE,
+  mirror: MIRROR.NONE,
+  size: 1
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case "mirror":
+    case types.mirror:
       return {
         ...state,
         mirror: state.mirror ^ action.payload
       };
-    case "mode":
+    case types.mode:
       return {
         ...state,
         mode: action.payload
       };
-    default:
+    case types.brush:
+      return {
+        ...state,
+        brush: action.payload
+      };
+    case types.nextBrush:
+      return {
+        ...state,
+        brush: (brushes.length + state.brush + 1) % brushes.length
+      };
+    case types.size:
+      return {
+        ...state,
+        size: action.payload
+      };
+    case types.tool:
+      switch (action.payload) {
+        case 'increase-brush-size':
+          return {
+            ...state,
+            size: state.size + 1
+          }
+        case 'decrease-brush-size':
+          return {
+            ...state,
+            size: Math.max(1, state.size - 1)
+          }
+        default:break;
+      }
       break;
+    default:break;
   }
 
   return state;

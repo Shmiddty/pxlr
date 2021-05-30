@@ -1,0 +1,37 @@
+#container {
+  position: relative;
+  width: 720px;
+  height: 720px;
+  margin-top: 1em;
+}
+#container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 720px;
+  height: 720px;
+  image-rendering: pixelated;
+  cursor: none;
+  display: block;
+  margin: 0;
+}
+#container #bg {
+  background: #ccc3;
+}
+#container #cursor {
+  pointer-events: none;
+}
+#container #mode {
+  pointer-events: none;
+  cursor: none;
+  position: absolute;
+  color: #fff;
+  font-size: 32px;
+  text-shadow: 1px 1px 1px #333a, -1px -1px 1px #333a, 1px -1px 1px #333a, -1px 1px 1px #333a;
+  display: none;
+}
+#container canvas:hover + canvas + #mode {
+  display: inline;
+}

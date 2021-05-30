@@ -1,0 +1,487 @@
+.keyboard {
+  font-size: 40px;
+}
+
+.tool.previous-color i,
+.tool.next-color i {
+  position: relative;
+}
+
+.tool.previous-color i::after,
+.tool.next-color i::after {
+  content: "\F03D8";
+  display: inline-block;
+  font: normal normal normal 24px/1 "Material Design Icons";
+  text-rendering: auto;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  font-size: .7em;
+  vertical-align: top;
+}
+.tool.previous-color i::before,
+.tool.next-color i::before {
+  font-size: .5em !important;
+  position: absolute;
+  bottom: -0.4em;
+  right: -0.3em;
+}
+
+.keyboard label span,
+.keyboard button:not(.key) span { 
+  display: none; 
+}
+
+.keyboard label i, .keyboard button {
+  display: inline-block;
+  border-radius: 3px;
+  background: #557;
+  border: solid 1px transparent;
+  box-shadow: 1px 1px 2px #0005;
+  text-shadow: 1px 1px 2px #0005;
+  color: #eef;
+  font-size: inherit;
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 1px;
+  transition: all 250ms linear;
+  user-select: none;
+  cursor: pointer;
+  padding: 0; 
+}
+
+.keyboard span {
+  font-size: .5em;
+  vertical-align: top;
+}
+.keyboard i:before {
+  font-size: .7em;
+  vertical-align: top;
+}
+
+.keyboard input {
+  display: none;
+}
+
+.keyboard .size i span {
+  display: block;
+  font-size: .5em;
+}
+.keyboard .size:hover i,
+.keyboard .size i:active,
+.keyboard .size.activated i {
+  background: #777a;
+  border-color: #fff7;
+}
+.keyboard .width2 i {
+  width: 2.25em;
+  margin-left: -1.25em; /* TODO: hacky solution to cover two butotns */
+}
+
+.keyboard .color {
+  position: relative;
+}
+
+.keyboard .color input[type="color"] {
+  display: block;
+  visibility: hidden;
+  position: absolute;
+  bottom: 0;
+}
+
+.keyboard .color i {
+  opacity: .5;
+}
+.keyboard .color:hover i,
+.keyboard .color input:checked + span + i {
+  opacity: 1;
+  border-color: #fffa;
+}
+
+.keyboard .mode i {
+  opacity: .75;
+  background: #755;
+}
+.keyboard .mode:hover i,
+.keyboard .mode input:checked + span + i{
+  opacity: 1;
+  background: #b77;
+  border-color: #fff7;
+}
+.keyboard .brushes {
+  font-size: inherit;
+}
+.keyboard .brushes label {
+  display: none;
+}
+.keyboard .brushes label.active {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.keyboard .brushes i {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.keyboard .tool {
+  background: #575;
+}
+.keyboard .tool:hover,
+.keyboard .tool:active,
+.keyboard .tool.activated{
+  background: #7b7;
+  border-color: #fff7;
+}
+
+.keyboard .toggle i {
+  background: #557;
+}
+.keyboard .brushes:active i,
+.keyboard .brushes.activated i,
+.keyboard .toggle:hover i,
+.keyboard .toggle input:checked + span + i {
+  background: #77b;
+  border-color: #fff7;
+}
+
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(72, .25em);
+  grid-template-rows: repeat(5, 1em);
+  grid-column-gap: 0;
+  grid-row-gap: .25em;
+}
+.keyboard .key {
+  background: #335;
+  color: #77b;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* .keyboard .key[data-key="Tab"]::after,*/
+.keyboard .key[data-key="Caps"]::after, 
+.keyboard .key[data-key="Enter"]::after { 
+  font: normal normal normal 24px/1 "Material Design Icons";
+  text-rendering: auto;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: top;
+  font-size: .7em;
+}
+
+.keyboard .key[data-key="ShiftLeft"]::after, 
+.keyboard .key[data-key="ShiftRight"]::after, 
+.keyboard .key[data-key="ControlLeft"]::after, 
+.keyboard .key[data-key="ControlRight"]::after, 
+.keyboard .key[data-key="AltLeft"]::after, 
+.keyboard .key[data-key="AltRight"]::after {
+  font-size: .5em;
+  vertical-align: top;
+  display: block;
+  padding: 0 .25em;
+}
+
+/*
+.keyboard .key[data-key="Tab"]::after {
+  content: '\F0312';
+}
+*/
+.keyboard .key[data-key="Caps"]::after {
+  content: '\F030E';
+}
+.keyboard .key[data-key="Enter"]::after {
+  content: '\F0311';
+}
+.keyboard .key[data-key="ShiftLeft"]::after {
+  content: 'shift';
+  text-align: left;
+}
+.keyboard .key[data-key="ShiftRight"]::after {
+  content: 'shift';
+  text-align: right;
+}
+.keyboard .key[data-key="ControlLeft"]::after {
+  content: 'ctrl';
+  text-align: left;
+}
+.keyboard .key[data-key="ControlRight"]::after {
+  content: 'ctrl';
+  text-align: right;
+}
+.keyboard .key[data-key="AltLeft"]::after {
+  content: 'alt';
+  text-align: left;
+}
+.keyboard .key[data-key="AltRight"]::after {
+  content: 'alt';
+  text-align: right;
+}
+
+.keyboard .key[data-key="Tab"] span, 
+.keyboard .key[data-key="Caps"] span, 
+.keyboard .key[data-key="Enter"] span, 
+.keyboard .key[data-key="ShiftLeft"] span, 
+.keyboard .key[data-key="ShiftRight"] span, 
+.keyboard .key[data-key="ControlLeft"] span, 
+.keyboard .key[data-key="ControlRight"] span, 
+.keyboard .key[data-key="AltLeft"] span, 
+.keyboard .key[data-key="AltRight"] span { 
+  display: none;
+}
+
+.keyboard *[data-key] {
+  grid-row: 5;
+  grid-column: 74 / span 4;
+}
+.keyboard [data-key="`"] {
+  grid-row: 1;
+  grid-column-start: 1;
+}
+.keyboard [data-key="1"] {
+  grid-row: 1;
+  grid-column-start: 6;
+}
+.keyboard [data-key="2"] {
+  grid-row: 1;
+  grid-column-start: 11;
+}
+.keyboard [data-key="3"] {
+  grid-row: 1;
+  grid-column-start: 16;
+}
+.keyboard [data-key="4"] {
+  grid-row: 1;
+  grid-column-start: 21;
+}
+.keyboard [data-key="5"] {
+  grid-row: 1;
+  grid-column-start: 26;
+}
+.keyboard [data-key="6"] {
+  grid-row: 1;
+  grid-column-start: 31;
+}
+.keyboard [data-key="7"] {
+  grid-row: 1;
+  grid-column-start: 36;
+}
+.keyboard [data-key="8"] {
+  grid-row: 1;
+  grid-column-start: 41;
+}
+.keyboard [data-key="9"] {
+  grid-row: 1;
+  grid-column-start: 46;
+}
+.keyboard [data-key="0"] {
+  grid-row: 1;
+  grid-column-start: 51;
+}
+.keyboard [data-key="-"] {
+  grid-row: 1;
+  grid-column-start: 56;
+}
+.keyboard [data-key="="] {
+  grid-row: 1;
+  grid-column-start: 61;
+}
+.keyboard [data-key="Backspace"] {
+  grid-row: 1;
+  grid-column: 66 / 72;
+  width: 1.75em;
+}
+
+.keyboard [data-key="Tab"] {
+  grid-row: 2;
+  grid-column: 1 / 7;
+  width: 1.75em;
+}
+.keyboard [data-key="q"] {
+  grid-row: 2;
+  grid-column-start: 9;
+}
+.keyboard [data-key="w"] {
+  grid-row: 2;
+  grid-column-start: 14;
+}
+.keyboard [data-key="e"] {
+  grid-row: 2;
+  grid-column-start: 19;
+}
+.keyboard [data-key="r"] {
+  grid-row: 2;
+  grid-column-start: 24;
+}
+.keyboard [data-key="t"] {
+  grid-row: 2;
+  grid-column-start: 29;
+}
+.keyboard [data-key="y"] {
+  grid-row: 2;
+  grid-column-start: 34;
+}
+.keyboard [data-key="u"] {
+  grid-row: 2;
+  grid-column-start: 39;
+}
+.keyboard [data-key="i"] {
+  grid-row: 2;
+  grid-column-start: 44;
+}
+.keyboard [data-key="o"] {
+  grid-row: 2;
+  grid-column-start: 49;
+}
+.keyboard [data-key="p"] {
+  grid-row: 2;
+  grid-column-start: 54;
+}
+.keyboard [data-key="["] {
+  grid-row: 2;
+  grid-column-start: 59;
+}
+.keyboard [data-key="]"] {
+  grid-row: 2;
+  grid-column-start: 64;
+}
+.keyboard [data-key="\\"] {
+  grid-row: 2;
+  grid-column-start: 69;
+}
+
+.keyboard [data-key="Caps"] {
+  grid-row: 3;
+  grid-column: 1 / 8;
+  width: 2em;
+}
+.keyboard [data-key="a"] {
+  grid-row: 3;
+  grid-column-start: 10;
+}
+.keyboard [data-key="s"] {
+  grid-row: 3;
+  grid-column-start: 15;
+}
+.keyboard [data-key="d"] {
+  grid-row: 3;
+  grid-column-start: 20;
+}
+.keyboard [data-key="f"] {
+  grid-row: 3;
+  grid-column-start: 25;
+}
+.keyboard [data-key="g"] {
+  grid-row: 3;
+  grid-column-start: 30;
+}
+.keyboard [data-key="h"] {
+  grid-row: 3;
+  grid-column-start: 35;
+}
+.keyboard [data-key="j"] {
+  grid-row: 3;
+  grid-column-start: 40;
+}
+.keyboard [data-key="k"] {
+  grid-row: 3;
+  grid-column-start: 45;
+}
+.keyboard [data-key="l"] {
+  grid-row: 3;
+  grid-column-start: 50;
+}
+.keyboard [data-key=";"] {
+  grid-row: 3;
+  grid-column-start: 55;
+}
+.keyboard [data-key="'"] {
+  grid-row: 3;
+  grid-column-start: 60;
+}
+.keyboard [data-key="Enter"] {
+  grid-row: 3;
+  grid-column: 65 / 72;
+  width: 2em;
+}
+
+.keyboard [data-key="ShiftLeft"] {
+  grid-row: 4;
+  grid-column: 1 / 10;
+  width: 2.5em;
+}
+.keyboard [data-key="z"] {
+  grid-row: 4;
+  grid-column-start: 12;
+}
+.keyboard [data-key="x"] {
+  grid-row: 4;
+  grid-column-start: 17;
+}
+.keyboard [data-key="c"] {
+  grid-row: 4;
+  grid-column-start: 22;
+}
+.keyboard [data-key="v"] {
+  grid-row: 4;
+  grid-column-start: 27;
+}
+.keyboard [data-key="b"] {
+  grid-row: 4;
+  grid-column-start: 32;
+}
+.keyboard [data-key="n"] {
+  grid-row: 4;
+  grid-column-start: 37;
+}
+.keyboard [data-key="m"] {
+  grid-row: 4;
+  grid-column-start: 42;
+}
+.keyboard [data-key=","] {
+  grid-row: 4;
+  grid-column-start: 47;
+}
+.keyboard [data-key="."] {
+  grid-row: 4;
+  grid-column-start: 52;
+}
+.keyboard [data-key="/"] {
+  grid-row: 4;
+  grid-column-start: 57;
+}
+.keyboard [data-key="ShiftRight"] {
+  grid-row: 4;
+  grid-column: 62 / 72;
+  width: 2.75em;
+}
+
+.keyboard [data-key="ControlLeft"] {
+  grid-row: 5;
+  grid-column: 1 / 9;
+  width: 2.25em;
+}
+.keyboard [data-key="AltLeft"] {
+  grid-row: 5;
+  grid-column: 11 / 20;
+  width: 2.5em;
+}
+.keyboard [data-key=" "] {
+  grid-row: 5;
+  grid-column: 22 / 51;
+  width: 7.5em;
+}
+.keyboard [data-key="AltRight"] {
+  grid-row: 5;
+  grid-column: 53 / 62;
+  width: 2.5em;
+}
+.keyboard [data-key="ControlRight"] {
+  grid-row: 5;
+  grid-column: 64 / 72;
+  width: 2.25em;
+}

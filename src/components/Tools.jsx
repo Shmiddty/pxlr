@@ -3,21 +3,24 @@ import { connect } from 'react-redux';
 import { upperFirst } from 'lodash';
 
 import { tools } from '../store/config/tools';
+import { activateTool } from '../store/config/actions';
 
 export default connect(
   state => ({
   }),
   dispatch => ({
-    activateTool: tool => dispatch({ type: "tool", payload: tool })
+    activateTool: tool => dispatch(activateTool(tool))
   })
 )(({ activateTool }) => (
-  <Fragment>{ tools.map(tool => (
+  <Fragment>{ tools.map(({ name, key, icon }) => (
     <button 
-      key={tool} 
-      className={`tool-${tool}`} 
-      onClick={() => activateTool(tool)}
+      key={name}
+      data-key={key}
+      className={`tool ${name}`} 
+      onClick={() => activateTool(name)}
     >
-      { upperFirst(tool) }
+      <span>{ upperFirst(name) }</span>
+      <i className={icon} />
     </button>))}
   </Fragment>
 ));
