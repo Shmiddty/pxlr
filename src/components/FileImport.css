@@ -1,0 +1,52 @@
+.file-import {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 720px;
+  height: 720px;
+  z-index: 9001;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-import input {
+  display: block;
+  background:#00f;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.file-import .altar,
+.file-import .maw {
+  display: none;
+  font-size: 42px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  width: 33%;
+  text-align: center;
+}
+
+/* TODO: make proper backgrounds for these */
+
+.file-import.prepare-your-body {
+  display: flex;
+  background: #f00;
+}
+
+.file-import.prepare-your-body .altar {
+  display: block;
+}
+
+.file-import.consume-the-meek {
+  display: flex;
+  background: #0f0;
+}
+
+.file-import.consume-the-meek .maw {
+  display: block;
+}
