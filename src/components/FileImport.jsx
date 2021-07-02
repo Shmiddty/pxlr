@@ -36,11 +36,13 @@ function getImageData(img) {
 }
 
 function imageDataToPxls({ data, width, height }) {
-  return chunk(data, 4).reduce((o, rgba, i) => {
+  return chunk(data, 4).reduce((o, [r,g,b,a], i) => {
     let x = i % width
       , y = Math.floor(i / width)
       ;
-    o[[x,y]] = rgba.slice(0,3).reduce((o, v) => 
+    if (a === 0) return o;
+
+    o[[x,y]] = [r,g,b,a].reduce((o, v) => 
       o + v.toString(16).padStart(2, '0'), "#"
     );
     return o;
@@ -65,7 +67,7 @@ export class FileImport extends Component {
   }
  
   handleDragEnter(e) {
-    this.ref.current.classList.add("prepare-your-body");
+    this.ref.current.classList.add("active", "prepare-your-body");
   }
 
   handleChange (se) {
@@ -78,7 +80,10 @@ export class FileImport extends Component {
       .then(imageDataToPxls)
       .then(this.props.setPxls)
       .then(() => {
-        this.ref.current.classList.remove("consume-the-meek");
+        setTimeout(() => {
+          this.ref.current.classList.remove("consume-the-meek");
+          setTimeout(() => this.ref.current.classList.remove("active"), 300);
+        }, 500); // TODO: use animation events for this.
       });
   }
 
