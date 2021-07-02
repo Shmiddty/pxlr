@@ -31,7 +31,7 @@
   display: none; 
 }
 
-.keyboard label i, .keyboard button {
+.keyboard label i, .keyboard button, .keyboard .size input {
   display: inline-block;
   border-radius: 3px;
   background: #557;
@@ -66,17 +66,45 @@
   display: none;
 }
 
-.keyboard .size i span {
-  display: block;
-  font-size: .5em;
+.keyboard .size {
+  font-size: inherit;
 }
-.keyboard .size:hover i,
-.keyboard .size i:active,
-.keyboard .size.activated i {
+.keyboard .size input {
+  display: block;
+  font-size: 16px;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  padding-left: .5em;
+  outline: none;
+}
+/* TODO: this is a hacky way to visually group the size inputs
+ * with their respective increase/decrease buttons. It would be 
+ * better to refactor them into grouped components
+ */
+.keyboard .size {
+  width: 3.54em;
+  z-index: 0;
+}
+.keyboard .increase-dimensions,
+.keyboard .decrease-dimensions,
+.keyboard .increase-brush-size,
+.keyboard .decrease-brush-size {
+  z-index: 1;
+}
+
+.keyboard .size i {
+  display: none;
+}
+
+.keyboard .size:hover input,
+.keyboard .size input:active,
+.keyboard .size.activated input {
   background: #777a;
   border-color: #fff7;
 }
-.keyboard .width2 i {
+.keyboard .width2 i,
+.keyboard .size.width2 {
   width: 2.25em;
   margin-left: -1.25em; /* TODO: hacky solution to cover two butotns */
 }

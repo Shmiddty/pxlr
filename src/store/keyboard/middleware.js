@@ -2,6 +2,12 @@ import bindings from './bindings';
 
 export default function (store) {
   window.addEventListener('keydown', e => {
+    
+    if (document.activeElement.tagName === "INPUT") {
+      // allow typing in input fields without hiccups
+      return;
+    }
+    
     // don't handle browser shortcuts
     if (e.ctrlKey || e.shiftKey || e.altKey) return;
 

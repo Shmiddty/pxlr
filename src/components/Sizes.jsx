@@ -1,26 +1,50 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
-import { resetSize } from '../store/config/actions';
-import { resetSize as resetCanvasSize } from '../store/canvas/actions';
+import { 
+  resetSize as resetBrushSize, 
+  setSize as setBrushSize
+} from '../store/config/actions';
+import { 
+  resetSize as resetCanvasSize, 
+  resize as setCanvasSize 
+} from '../store/canvas/actions';
+
+// TODO: properly enforce max canvas size
 
 // TODO: might want to do this dynamically like the others
 export default connect(
   state => ({
-    size: state.config.size,
+    brushSize: state.config.size,
     canvasSize: state.canvas.width
   }),
   dispatch => ({
-    resetSize: () => dispatch(resetSize()),
-    resetCanvasSize: () => dispatch(resetCanvasSize())
+    resetBrushSize: () => dispatch(resetBrushSize()),
+    setBrushSize: e => dispatch(setBrushSize(+e.target.value)),
+    resetCanvasSize: () => dispatch(resetCanvasSize()),
+    setCanvasSize: e => dispatch(setCanvasSize(+e.target.value))
   })
-)(({ size, resetSize, canvasSize, resetCanvasSize }) => (
+)(({
+  brushSize, 
+  resetBrushSize,
+  setBrushSize,
+
+  canvasSize, 
+  resetCanvasSize,
+  setCanvasSize
+}) => (
   <Fragment>
     <label
       data-key="p"
       className="size canvas-size"
-      onClick={resetCanvasSize}
     >
       <span>Canvas Size</span>
+      <input
+        type="number" 
+        value={canvasSize}
+        onChange={setCanvasSize}
+        min="8"
+        max="256"
+      />
       <i className="mdi ">
         <span>{canvasSize}</span>
       </i>
@@ -28,11 +52,16 @@ export default connect(
     <label 
       data-key="l"
       className="size brush-size"
-      onClick={resetSize}
     >
       <span>Brush Size</span>
+      <input
+        type="number" 
+        value={brushSize}
+        onChange={setBrushSize}
+        min="1"
+      />
       <i className="mdi ">
-        <span>{size}</span>
+        <span>{brushSize}</span>
       </i>
     </label>
   </Fragment>
