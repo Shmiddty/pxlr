@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import chunk from "lodash/chunk";
+import makeEnum from "../util/makeEnum";
+import cn from "../util/classnames";
 import { setPxls, resize } from '../store/canvas/actions';
 import './FileImport.css';
 
@@ -49,14 +51,42 @@ function imageDataToPxls({ data, width, height }) {
   }, {});
 }
 
+function validateSize(size) {
+  return function(img) {
+    if (img.width > size) throw new Error("The size of the image is too damn high!");
+    return img;
+  }
+}
+
+
+const STATUS = makeEnum([
+  "ready",
+  "waiting",
+  "processing",
+  "error",
+  "success"
+]);
+
 export class FileImport extends Component {
+  static defaultProps = {
+    waitingMessage: "Drop your file here.",
+    processingMessage: "Processing your file.",
+    successMessage: "Successfully processed.",
+    errorMessage: "There was an error while processing your file."
+  }
+
   constructor(props) {
     super(props);
 
-    this.ref = React.createRef();
-
     this.handleChange = this.handleChange.bind(this);
     this.handleDragEnter = this.handleDragEnter.bind(this);
+
+    this.state = { status: STATUS.ready };
+  }
+
+  setStatus (status, delay = 0) {
+    if (delay) setTimeout(this.setState.bind(this, { status }), delay);
+    else this.setState({ status });
   }
 
   componentDidMount() {
@@ -67,52 +97,63 @@ export class FileImport extends Component {
   }
  
   handleDragEnter(e) {
-    this.ref.current.classList.add("fading");
-    setTimeout(() => 
-      this.ref.current.classList.add("active", "prepare-your-body"),
-      0
-    );
+    this.setStatus(STATUS.waiting);
   }
 
   handleChange (se) {
-    let el = this.ref.current;
-    el.classList.remove("prepare-your-body");
-    setTimeout(() => el.classList.add("consume-the-meek"), 500);
-    let tar = se.target;
+    
+    this.setStatus(STATUS.processing);
+
+    // TODO: maybe make this a generic component some day?
+    let tar = se.target; // needt his ref to clear the value later.
     getImage(tar.files[0])
+      .then(validateSize(256))
       .then(getImageData)
       .then(img => (this.props.resize(img.width), img))
       .then(imageDataToPxls)
       .then(this.props.setPxls)
-      .then(() => {
+      .then(() => this.setStatus(STATUS.success))
+      .catch(e => this.setStatus(STATUS.error))
+      .finally(() => {
         tar.value = '';
-        setTimeout(() => {
-          el.classList.remove("consume-the-meek");
-          setTimeout(() => {
-            el.classList.remove("active");
-            setTimeout(() => el.classList.remove("fading"), 400);
-          }, 900);
-        }, 900); // TODO: use animation events for this.
+        this.setStatus(STATUS.ready, 1500); // TODO: icky hacky 
       });
   }
 
   render() {
+    const {
+      waitingMessage,
+      processingMessage,
+      successMessage,
+      errorMessage
+    } = this.props;
+
     return (
       <label
-        ref={this.ref}
-        className="file-import"
+        className={cn({
+          "file-import":true,
+          [STATUS[this.state.status]]:true
+        })}
       >
-        <section className="altar">
-          Present your sacrifice
+        <section className="waiting-msg">
+          {waitingMessage}
         </section>
         
-        <section className="maw">
-          Consuming the forsaken...
+        <section className="processing-msg">
+          {processingMessage}
+        </section>
+
+        <section className="success-msg">
+          {successMessage}
+        </section>
+
+        <section className="error-msg">
+          {errorMessage}
         </section>
 
         <input
           onChange={this.handleChange}
-          accept="image/*"
+          accept="image/*" // TODO: this should maybe be a prop?
           type="file"
         />
       </label>

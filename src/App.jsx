@@ -14,7 +14,11 @@ export default function App(props) {
       <span className="save-notice">(right click on the image to save it)</span>
       <Canvas />
       <SideLength />
-      <FileImport />
+      <FileImport 
+        waitingMessage="Present your sacrifice..."
+        successMessage="Delicious!"
+        errorMessage="Disgusting!"
+      />
     </Provider>
   );
 }
