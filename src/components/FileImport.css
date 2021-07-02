@@ -7,7 +7,7 @@
   height: 720px;
   z-index: 9001;
   background: #3b3b3b;
-  transition: opacity 250ms linear;
+  transition: opacity 300ms linear;
 }
 
 .file-import input {
@@ -54,13 +54,10 @@
 }
 
 .file-import .altar {
-  background-image: url("/prepare.png");
-  background-size: cover;
-  image-rendering: pixelated;
   color: #fda;
 }
 .file-import .maw {
-  background-image: url("/consume.png");
+  background-image: url("/tentacles.png");
   background-size: cover;
   image-rendering: pixelated;
   color: Transparent;

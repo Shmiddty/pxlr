@@ -77,21 +77,22 @@ export class FileImport extends Component {
   handleChange (se) {
     let el = this.ref.current;
     el.classList.remove("prepare-your-body");
-    el.classList.add("consume-the-meek");
-
-    getImage(se.target.files[0])
+    setTimeout(() => el.classList.add("consume-the-meek"), 500);
+    let tar = se.target;
+    getImage(tar.files[0])
       .then(getImageData)
       .then(img => (this.props.resize(img.width), img))
       .then(imageDataToPxls)
       .then(this.props.setPxls)
       .then(() => {
+        tar.value = '';
         setTimeout(() => {
           el.classList.remove("consume-the-meek");
           setTimeout(() => {
             el.classList.remove("active");
-            setTimeout(() => el.classList.remove("fading"), 300);
-          }, 300);
-        }, 750); // TODO: use animation events for this.
+            setTimeout(() => el.classList.remove("fading"), 400);
+          }, 900);
+        }, 900); // TODO: use animation events for this.
       });
   }
 
