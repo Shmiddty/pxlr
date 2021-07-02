@@ -106,17 +106,19 @@ export class FileImport extends Component {
 
     // TODO: maybe make this a generic component some day?
     let tar = se.target; // needt his ref to clear the value later.
+    let cleanupTime = 300;
+    let postCleanupTime = 1200;
     getImage(tar.files[0])
       .then(validateSize(256))
       .then(getImageData)
       .then(img => (this.props.resize(img.width), img))
       .then(imageDataToPxls)
       .then(this.props.setPxls)
-      .then(() => this.setStatus(STATUS.success))
-      .catch(e => this.setStatus(STATUS.error))
+      .then(() => this.setStatus(STATUS.success, cleanupTime))
+      .catch(e => this.setStatus(STATUS.error, cleanupTime))
       .finally(() => {
         tar.value = '';
-        this.setStatus(STATUS.ready, 1500); // TODO: icky hacky 
+        this.setStatus(STATUS.ready, cleanupTime + postCleanupTime); // TODO: icky hacky 
       });
   }
 
