@@ -7,6 +7,7 @@
   height: 720px;
   z-index: 9001;
   background: #3b3b3b;
+  transition: opacity 250ms linear;
 }
 
 .file-import input {
@@ -35,10 +36,34 @@
 }
 
 /* TODO: make proper backgrounds for these */
-.file-import.active{
+.file-import.fading {
   display: block;
-  background: #3b3b3b;
-  color: #dfa;
+  background-color: #3b3b3b;
+  opacity: 0;
+  background-image: url("/prepare.png");
+  image-rendering: pixelated;
+  background-size: cover;
+}
+.file-import.fading .altar,
+.file-import.fading .maw {
+  opacity: 0;
+}
+
+.file-import.active {
+  opacity: 1;
+}
+
+.file-import .altar {
+  background-image: url("/prepare.png");
+  background-size: cover;
+  image-rendering: pixelated;
+  color: #fda;
+}
+.file-import .maw {
+  background-image: url("/consume.png");
+  background-size: cover;
+  image-rendering: pixelated;
+  color: Transparent;
 }
 
 .file-import.active .altar,
@@ -48,20 +73,11 @@
   justify-content: center;
   position: absolute;
   opacity: 0;
-  transition: opacity 250ms linear;
+  transition: opacity 500ms linear;
   bottom: 0;
 }
 
-.file-import.prepare-your-body .altar {
-  background-image: url("/prepare.png");
-  image-rendering: pixelated;
-  background-size: cover;
-  opacity: 1;
-}
-
+.file-import.prepare-your-body .altar,
 .file-import.consume-the-meek .maw {
-  image-rendering: pixelated;
-  background-size: cover;
-  background-image: url("/consume.png");
   opacity: 1;
 }

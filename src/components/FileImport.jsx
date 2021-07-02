@@ -67,12 +67,17 @@ export class FileImport extends Component {
   }
  
   handleDragEnter(e) {
-    this.ref.current.classList.add("active", "prepare-your-body");
+    this.ref.current.classList.add("fading");
+    setTimeout(() => 
+      this.ref.current.classList.add("active", "prepare-your-body"),
+      0
+    );
   }
 
   handleChange (se) {
-    this.ref.current.classList.remove("prepare-your-body");
-    this.ref.current.classList.add("consume-the-meek");
+    let el = this.ref.current;
+    el.classList.remove("prepare-your-body");
+    el.classList.add("consume-the-meek");
 
     getImage(se.target.files[0])
       .then(getImageData)
@@ -81,9 +86,12 @@ export class FileImport extends Component {
       .then(this.props.setPxls)
       .then(() => {
         setTimeout(() => {
-          this.ref.current.classList.remove("consume-the-meek");
-          setTimeout(() => this.ref.current.classList.remove("active"), 300);
-        }, 500); // TODO: use animation events for this.
+          el.classList.remove("consume-the-meek");
+          setTimeout(() => {
+            el.classList.remove("active");
+            setTimeout(() => el.classList.remove("fading"), 300);
+          }, 300);
+        }, 750); // TODO: use animation events for this.
       });
   }
 
@@ -97,7 +105,7 @@ export class FileImport extends Component {
           Present your sacrifice
         </section>
         
-          <section className="maw">
+        <section className="maw">
           Consuming the forsaken...
         </section>
 
