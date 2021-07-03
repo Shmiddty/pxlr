@@ -106,7 +106,7 @@ export class FileImport extends Component {
 
     // TODO: maybe make this a generic component some day?
     let tar = se.target; // needt his ref to clear the value later.
-    let cleanupTime = 300;
+    let cleanupTime = 400;
     let postCleanupTime = 1200;
     getImage(tar.files[0])
       .then(validateSize(256))

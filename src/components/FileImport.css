@@ -30,7 +30,7 @@
 }
 .file-import.ready {
   opacity: 0;
-  display: none;
+  pointer-events: none;
 }
 
 .file-import section {
