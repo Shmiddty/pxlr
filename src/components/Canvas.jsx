@@ -51,7 +51,7 @@ export class Canvas extends Component {
     this.handlePointerUp = this.handlePointerUp.bind(this);
     this.handlePointerLeave = this.handlePointerLeave.bind(this);
 
-    this.dbPointerUp = debounce(this.handlePointerUp, 100);
+    this.dbPointerUp = debounce(this.handlePointerUp, 250);
 
     this.pxlCache = {};
     this._mouse = null;
@@ -111,40 +111,10 @@ export class Canvas extends Component {
     }
   }
 
-  handleMouseDown (e) {
-    if (e.which === 3) return; // right click
-    this._down = true;
-    this._moved = false;
-    this.pxlCache = {};
-  }
-  handleMouseUp (e) {
-    if (!this._down) return; // click outside of canvas
-
-    if (this._moved) {
-      this.props.updatePxls(this.pxlCache, this.props);
-      this.pxlCache = {};
-    }
-    else this.apply(e, false); // already a nativeEvent
-
-    this._moved = this._down = false;
-  }
-  handleMouseMove (e) {
-    this._mouse = [e.offsetX, e.offsetY];
-    this._moved = true;
-    if (this._down && e.target === this.canvas.current) this.apply(e, true);
-
-    cancelAnimationFrame(this.maf);
-    this.maf = requestAnimationFrame(() => this.paintCursor());
-  }
-  handleMouseLeave (e) {
-    this._mouse = null;
-    this.paintCursor();
-  }
   handlePointerDown (e) {
     if (e.which === 3) return; // right click
     this._down = true;
     this._moved = false;
-    this.pxlCache = {};
   }
   handlePointerUp (e) {
     if (!this._down) return; // click outside of canvas
@@ -153,12 +123,12 @@ export class Canvas extends Component {
     
     if (this._moved) {
       this.props.updatePxls(this.pxlCache, this.props);
-      this.pxlCache = {};
     }
     else {
       this.apply(e, false); // already a nativeEvent
     }
 
+    this.pxlCache = {};
     this._moved = this._down = false;
   }
   handlePointerUpdate (e) {
@@ -180,11 +150,12 @@ export class Canvas extends Component {
       width: cols, 
       height: rows, 
       pixelClicked, 
-      getPxls 
+      getPxls,
+      size
     } = this.props;
     let pos = [
-      Math.floor(offsetX / this._width * cols),
-      Math.floor(offsetY / this._height * rows)
+      Math.floor(offsetX / this._width * cols - size/2),
+      Math.floor(offsetY / this._height * rows - size/2)
     ];
 
     if (multi) {
@@ -241,16 +212,20 @@ export class Canvas extends Component {
     let s = size * rat;
     
     if (!clearAll && this._lastMouse) {
-      const [lx, ly] = this._lastMouse.map(c => Math.floor(c / rat) * rat);
+      const [lx, ly] = this._lastMouse.map(
+        c => Math.floor(c / rat) * rat - Math.floor(s / 2)
+      );
       ctx.clearRect(lx - s, ly - s, s * 3 , s * 3);
     } else ctx.clearRect(0, 0, curCanSize, curCanSize);
 
     if (this._mouse) {
-      const [x, y] = this._mouse.map(c => Math.floor(c / rat) * rat - 0.5);
       const isSinglePixelMode = [MODE.BUCKET, MODE.DROPPER].includes(mode);
-
       if (isSinglePixelMode) s = rat; // TODO: icky hacky 
 
+      const [x, y] = this._mouse.map(
+        c => Math.floor((c - s/2) / rat) * rat - 0.5
+      );
+      
       this._lastMouse = this._mouse
 
       ctx.strokeStyle = "#0007";
@@ -290,11 +265,6 @@ export class Canvas extends Component {
         <canvas
           id="canvas"
           ref={this.canvas}
-          /*
-          onMouseDown={this.handleMouseDown}
-          onMouseMove={this.handleMouseMove}
-          onMouseLeave={this.handleMouseLeave}
-          */
           width={width}
           height={height}
         />
