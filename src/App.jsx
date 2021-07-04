@@ -16,6 +16,7 @@ export default function App(props) {
       <SideLength />
       <FileImport 
         waitingMessage="Present your sacrifice..."
+        processingMessage="Consuming..."
         successMessage="Delicious!"
         errorMessage="Disgusting!"
       />

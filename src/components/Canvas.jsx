@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Color from 'color';
+import debounce from 'lodash/debounce';
 import { setColor, setPaletteIndex } from '../store/palette/actions';
 import { setPxls, bucket } from '../store/canvas/actions';
 import { MODE, MIRROR, modes, BRUSH } from '../store/config/tools';
@@ -45,10 +46,12 @@ export class Canvas extends Component {
     this.cursor = React.createRef();
     this.mode = React.createRef();
 
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleMouseUp = this.handleMouseUp.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handlePointerDown = this.handlePointerDown.bind(this);
+    this.handlePointerUpdate = this.handlePointerUpdate.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
+    this.handlePointerLeave = this.handlePointerLeave.bind(this);
+
+    this.dbPointerUp = debounce(this.handlePointerUp, 100);
 
     this.pxlCache = {};
     this._mouse = null;
@@ -65,16 +68,26 @@ export class Canvas extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("mouseup", this.handleMouseUp);
     this.updateCanvasProps();
     this.paintPxls();
     this.paintBg();
+
+    const can = this.canvas.current;
+    can.addEventListener("pointerdown", this.handlePointerDown);
+    can.addEventListener("pointerrawupdate", this.handlePointerUpdate);
+    can.addEventListener("pointerup", this.handlePointerUp);
+    can.addEventListener("pointerleave", this.handlePointerLeave);
   }
   componentWillUnmount() {
-    window.removeEventListener("mouseup", this.handleMouseUp);
     cancelAnimationFrame(this.af);
     cancelAnimationFrame(this.baf);
     cancelAnimationFrame(this.maf);
+    
+    const can = this.canvas.current;
+    can.removeEventListener("pointerdown", this.handlePointerDown);
+    can.removeEventListener("pointerrawupdate", this.handlePointerUpdate);
+    can.removeEventListener("pointerup", this.handlePointerUp);
+    can.removeEventListener("pointerleave", this.handlePointerLeave);
   }
   componentDidUpdate({ size, pxls, width, mode, brush }) {
     if (width !== this.props.width || pxls !== this.props.pxls) {
@@ -99,7 +112,7 @@ export class Canvas extends Component {
   }
 
   handleMouseDown (e) {
-    if (e.nativeEvent.which === 3) return; // right click
+    if (e.which === 3) return; // right click
     this._down = true;
     this._moved = false;
     this.pxlCache = {};
@@ -116,14 +129,48 @@ export class Canvas extends Component {
     this._moved = this._down = false;
   }
   handleMouseMove (e) {
-    this._mouse = [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
+    this._mouse = [e.offsetX, e.offsetY];
     this._moved = true;
-    if (this._down && e.target === this.canvas.current) this.apply(e.nativeEvent, true);
+    if (this._down && e.target === this.canvas.current) this.apply(e, true);
 
     cancelAnimationFrame(this.maf);
     this.maf = requestAnimationFrame(() => this.paintCursor());
   }
   handleMouseLeave (e) {
+    this._mouse = null;
+    this.paintCursor();
+  }
+  handlePointerDown (e) {
+    if (e.which === 3) return; // right click
+    this._down = true;
+    this._moved = false;
+    this.pxlCache = {};
+  }
+  handlePointerUp (e) {
+    if (!this._down) return; // click outside of canvas
+
+    this.dbPointerUp.cancel();
+    
+    if (this._moved) {
+      this.props.updatePxls(this.pxlCache, this.props);
+      this.pxlCache = {};
+    }
+    else {
+      this.apply(e, false); // already a nativeEvent
+    }
+
+    this._moved = this._down = false;
+  }
+  handlePointerUpdate (e) {
+    this.dbPointerUp(e);
+    this._mouse = [e.offsetX, e.offsetY];
+    this._moved = true;
+    if (this._down && e.target === this.canvas.current) this.apply(e, true);
+
+    cancelAnimationFrame(this.maf);
+    this.maf = requestAnimationFrame(() => this.paintCursor());
+  }
+  handlePointerLeave (e) {
     this._mouse = null;
     this.paintCursor();
   }
@@ -170,7 +217,6 @@ export class Canvas extends Component {
         }
       }
     }
-
   }
 
   paintPxls(newPxls) {
@@ -244,9 +290,11 @@ export class Canvas extends Component {
         <canvas
           id="canvas"
           ref={this.canvas}
+          /*
           onMouseDown={this.handleMouseDown}
           onMouseMove={this.handleMouseMove}
           onMouseLeave={this.handleMouseLeave}
+          */
           width={width}
           height={height}
         />
