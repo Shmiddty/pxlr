@@ -132,7 +132,8 @@ export class Canvas extends Component {
     this._moved = this._down = false;
   }
   handlePointerUpdate (e) {
-    this.dbPointerUp(e);
+    if (e.pointerType === "touch") this.dbPointerUp(e);
+
     this._mouse = [e.offsetX, e.offsetY];
     this._moved = true;
     if (this._down && e.target === this.canvas.current) this.apply(e, true);
