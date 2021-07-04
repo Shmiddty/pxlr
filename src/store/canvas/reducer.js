@@ -2,6 +2,11 @@ import { bfs } from '../../util/search';
 import { types as canvasTypes } from './actions';
 import { types as configTypes } from '../config/actions';
 
+const maxWidth = 256;
+const maxHeight = 256;
+const minWidth = 8;
+const minHeight = 8;
+
 const initialState = {
   width: 24,
   height: 24,
@@ -73,14 +78,15 @@ export default function (state = initialState, action) {
     case canvasTypes.resize:
       next = {
         ...state,
-        width: action.payload,
-        height: action.payload
+        width: Math.max(minWidth, Math.min(maxWidth, action.payload)),
+        height: Math.max(minHeight, Math.min(maxHeight, action.payload))
       };
       break;
     case canvasTypes.resetSize:
       next = {
-        ...initialState,
-        pxls: state.pxls
+        ...state,
+        width: initialState.width,
+        height: initialState.height
       };
       break;
     case canvasTypes.bucket:
@@ -137,15 +143,15 @@ export default function (state = initialState, action) {
         case "increase-dimensions":
           next = {
             ...state,
-            width: state.width + 8,
-            height: state.height + 8
+            width: Math.min(maxWidth, state.width + 8),
+            height: Math.min(maxHeight, state.height + 8)
           };
           break;
         case "decrease-dimensions":
           next = {
             ...state,
-            width: Math.max(8, state.width - 8),
-            height: Math.max(8, state.height - 8)
+            width: Math.max(minWidth, state.width - 8),
+            height: Math.max(minHeight, state.height - 8)
           };
           break;
         case "rotate-clockwise":
