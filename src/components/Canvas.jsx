@@ -346,14 +346,14 @@ export default connect(
         case MODE.DARKEN:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
-              o[p] = Color(pxls[p]).darken(0.1).hex();
+              if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
               return o;
             }, {}))
           );
         case MODE.LIGHTEN:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
-              o[p] = Color(pxls[p]).lighten(0.1).hex();
+              if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
               return o;
             }, {}))
           );
