@@ -7,7 +7,6 @@ import { setPxls, bucket } from '../store/canvas/actions';
 import { MODE, MIRROR, modes, BRUSH } from '../store/config/tools';
 import "./Canvas.css";
 
-const curCanSize = 720; // TODO: should this be a prop? but... it's also in css
 const modeIconSize = 32;
 
 function magSqr([x,y]) {
@@ -102,16 +101,8 @@ export class Canvas extends Component {
       this.baf = requestAnimationFrame(() => this.paintBg());
     }
 
-    if (
-      mode !== this.props.mode || 
-      width !== this.props.width || 
-      size !== this.props.size ||
-      brush !== this.props.brush ||
-      mirror !== this.props.mirror
-    ) {
-      cancelAnimationFrame(this.maf);
-      this.maf = requestAnimationFrame(() => this.paintCursor(true));
-    }
+    // TODO: may need to revisit this
+    this.paintCursor(true)
   }
 
   handlePointerDown (e) {
@@ -229,7 +220,7 @@ export class Canvas extends Component {
         .forEach(([x,y]) => 
           ctx.clearRect(x, y, 1, 1)
         );
-    } else ctx.clearRect(0, 0, curCanSize, curCanSize);
+    } else ctx.clearRect(0, 0, width, width);
 
     if (this._mouse) {
       this._lastMouse = this._mouse;
@@ -237,7 +228,12 @@ export class Canvas extends Component {
       const pos = this.pointerToPos(this._mouse); 
       const [x, y] = pos.map(c => c * rat);
 
-      ctx.fillStyle =  "#777";
+      // TODO: maybe show darken/lighten as well?
+      ctx.fillStyle = mode === MODE.PENCIL 
+        ? this.props.color
+        : "#7777"
+        ;
+
       getBrushPositions(pos, this.props).forEach(([x,y]) => {
         ctx.fillRect(x, y, 1, 1);
       });
