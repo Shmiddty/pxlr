@@ -1,5 +1,12 @@
 import { palette, modes, toggles, tools } from '../config/tools';
-import { setMode, toggleMirror, activateTool, resetSize, nextBrush } from '../config/actions';
+import { 
+  setMode, 
+  toggleMirror, 
+  activateTool, 
+  resetSize, 
+  nextBrush, 
+  nextSymmetry 
+} from '../config/actions';
 import { resetSize as resetCanvasSize } from '../canvas/actions';
 import { setPaletteIndex } from '../palette/actions';
 
@@ -23,5 +30,6 @@ export default {
   }, {}),
   l: resetSize(),
   p: resetCanvasSize(),
+  b: nextSymmetry(),
   'Tab': nextBrush()
 };

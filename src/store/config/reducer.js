@@ -1,10 +1,11 @@
-import { MIRROR, MODE, BRUSH, brushes } from './tools';
+import { MIRROR, MODE, BRUSH, brushes, symmetries } from './tools';
 import { types } from './actions';
 
 const initialState = {
   mode: MODE.PENCIL,
   brush: BRUSH.SQUARE,
   mirror: MIRROR.NONE,
+  rotationalSymmetry: false,
   size: 1
 };
 
@@ -34,6 +35,19 @@ export default function (state = initialState, action) {
       return {
         ...state,
         size: action.payload
+      };
+    case types.rotationalSymmetry:
+      return {
+        ...state,
+        rotationalSymmetry: action.payload
+      };
+    case types.nextSymmetry:
+      return {
+        ...state,
+        rotationalSymmetry: symmetries[
+          (1 + symmetries.indexOf(state.rotationalSymmetry)) % 
+          symmetries.length
+        ]
       };
     case types.tool:
       switch (action.payload) {

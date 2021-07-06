@@ -6,6 +6,7 @@ import Toggles from './Toggles';
 import Tools from './Tools';
 import Keys from './Keys';
 import Sizes from './Sizes';
+import RotationalSymmetry from './RotationalSymmetry';
 
 import '@mdi/font/css/materialdesignicons.min.css';
 import './Keyboard.css';
@@ -18,6 +19,7 @@ export default function Keyboard() {
       <Brushes />
       <Modes />
       <Toggles />
+      <RotationalSymmetry />
       <Tools />
       <Sizes />
     </div>

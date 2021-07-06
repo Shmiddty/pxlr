@@ -7,7 +7,9 @@ export const types = makeEnum([
   "nextBrush",
   "tool",
   "mirror",
-  "size"
+  "size",
+  "rotationalSymmetry",
+  "nextSymmetry"
 ]);
 
 // TODO: pen size
@@ -38,6 +40,14 @@ export function toggleMirror(name) {
     case "mirror-horizontally": return setMirror(MIRROR.HORIZONTAL);
     default: break;
   }
+}
+
+export function setRotationalSymmetry(degrees) {
+  return { type: types.rotationalSymmetry, payload: degrees };
+}
+
+export function nextSymmetry() {
+  return { type: types.nextSymmetry };
 }
 
 export function setSize(size) {

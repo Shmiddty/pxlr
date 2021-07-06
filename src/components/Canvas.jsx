@@ -13,7 +13,15 @@ function magSqr([x,y]) {
   return x**2 + y**2;
 }
 
-function getBrushPositions (position, { mode, brush, size, mirror, width, height }) {
+function getBrushPositions (position, { 
+  mode, 
+  brush, 
+  size, 
+  mirror, 
+  width, 
+  height,
+  rotationalSymmetry: rs
+}) {
   if ([MODE.BUCKET, MODE.DROPPER].includes(mode)) return [position];
   
   let [px, py] = position;
@@ -36,6 +44,25 @@ function getBrushPositions (position, { mode, brush, size, mirror, width, height
       }
     }
   }
+
+  if (rs) {
+    // TODO: learn matrix rotations
+    const rots = [];
+    for (let theta = rs; theta < 360; theta += rs) {
+      rots.push(...positions.map(([x,y]) => {
+        const cx = width / 2 - 1/2, cy = height / 2 - 1/2;
+        const ax = x - cx, ay = y - cy;
+        const mag = Math.sqrt(ax**2 + ay**2)
+        const t0 = Math.atan2(ay, ax);
+        const t1 = t0 + theta / 180 * Math.PI;
+        const x1 = Math.round(cx + Math.cos(t1) * mag);
+        const y1 = Math.round(cy + Math.sin(t1) * mag);
+        return [x1, y1]
+      }))
+    }
+    positions.push(...rots);
+  }
+
   return positions;
 }
 
