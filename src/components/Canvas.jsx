@@ -14,7 +14,9 @@ function magSqr([x,y]) {
   return x**2 + y**2;
 }
 
-function getBrushPositions (position, { brush, size, mirror, width, height }) {
+function getBrushPositions (position, { mode, brush, size, mirror, width, height }) {
+  if ([MODE.BUCKET, MODE.DROPPER].includes(mode)) return [position];
+  
   let [px, py] = position;
   let positions = [];
   for (let i = 0; i < size; i++) {
@@ -89,7 +91,7 @@ export class Canvas extends Component {
     can.removeEventListener("pointerup", this.handlePointerUp);
     can.removeEventListener("pointerleave", this.handlePointerLeave);
   }
-  componentDidUpdate({ size, pxls, width, mode, brush }) {
+  componentDidUpdate({ size, pxls, width, mode, brush, mirror }) {
     if (width !== this.props.width || pxls !== this.props.pxls) {
       cancelAnimationFrame(this.af);
       this.af = requestAnimationFrame(() => this.paintPxls());
@@ -104,10 +106,11 @@ export class Canvas extends Component {
       mode !== this.props.mode || 
       width !== this.props.width || 
       size !== this.props.size ||
-      brush !== this.props.brush
+      brush !== this.props.brush ||
+      mirror !== this.props.mirror
     ) {
       cancelAnimationFrame(this.maf);
-      this.maf = requestAnimationFrame(() => this.paintCursor(size !== this.props.size));
+      this.maf = requestAnimationFrame(() => this.paintCursor(true));
     }
   }
 
@@ -125,7 +128,7 @@ export class Canvas extends Component {
       this.props.updatePxls(this.pxlCache, this.props);
     }
     else {
-      this.apply(e, false); // already a nativeEvent
+      this.apply([e.offsetX, e.offsetY], false); // already a nativeEvent
     }
 
     this.pxlCache = {};
@@ -136,7 +139,8 @@ export class Canvas extends Component {
 
     this._mouse = [e.offsetX, e.offsetY];
     this._moved = true;
-    if (this._down && e.target === this.canvas.current) this.apply(e, true);
+    if (this._down && e.target === this.canvas.current) 
+      this.apply([e.offsetX, e.offsetY], true);
 
     cancelAnimationFrame(this.maf);
     this.maf = requestAnimationFrame(() => this.paintCursor());
@@ -146,18 +150,27 @@ export class Canvas extends Component {
     this.paintCursor();
   }
 
-  apply ({ offsetX, offsetY }, multi = false) {
+  pointerToPos ([ offsetX, offsetY ]) {
     const { 
       width: cols, 
-      height: rows, 
-      pixelClicked, 
-      getPxls,
+      height: rows,
+      mode,
       size
     } = this.props;
-    let pos = [
-      Math.floor(offsetX / this._width * cols - size/2),
-      Math.floor(offsetY / this._height * rows - size/2)
+    const isSinglePixelMode = [MODE.BUCKET, MODE.DROPPER].includes(mode);
+    const s = isSinglePixelMode ? 1 : size;
+    return [
+      Math.floor(offsetX / this._width * cols - s/2),
+      Math.floor(offsetY / this._height * rows - s/2)
     ];
+  }
+
+  apply (pointer, multi = false) {
+    const { 
+      pixelClicked, 
+      getPxls
+    } = this.props;
+    const pos = this.pointerToPos(pointer);
 
     if (multi) {
       const newPxls = getPxls(pos, this.props);
@@ -207,46 +220,33 @@ export class Canvas extends Component {
   }
 
   paintCursor(clearAll) {
-    const { width, brush, size, mode } = this.props;
+    const { width, size, mode } = this.props;
     const ctx = this._cursorCtx;
     const rat = this._width / width;
-    let s = size * rat;
     
     if (!clearAll && this._lastMouse) {
-      const [lx, ly] = this._lastMouse.map(
-        c => Math.floor(c / rat) * rat - Math.floor(s / 2)
-      );
-      ctx.clearRect(lx - s, ly - s, s * 3 , s * 3);
+      getBrushPositions(this.pointerToPos(this._lastMouse), this.props)
+        .forEach(([x,y]) => 
+          ctx.clearRect(x, y, 1, 1)
+        );
     } else ctx.clearRect(0, 0, curCanSize, curCanSize);
 
     if (this._mouse) {
-      const isSinglePixelMode = [MODE.BUCKET, MODE.DROPPER].includes(mode);
-      if (isSinglePixelMode) s = rat; // TODO: icky hacky 
+      this._lastMouse = this._mouse;
 
-      const [x, y] = this._mouse.map(
-        c => Math.floor((c - s/2) / rat) * rat - 0.5
-      );
-      
-      this._lastMouse = this._mouse
+      const pos = this.pointerToPos(this._mouse); 
+      const [x, y] = pos.map(c => c * rat);
 
-      ctx.strokeStyle = "#0007";
+      ctx.fillStyle =  "#777";
+      getBrushPositions(pos, this.props).forEach(([x,y]) => {
+        ctx.fillRect(x, y, 1, 1);
+      });
       
-      if (isSinglePixelMode || brush === BRUSH.SQUARE) {
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, s, s);
-        ctx.strokeStyle = "#fff7";
-        ctx.strokeRect(x + 1, y + 1, s, s);
-      } else if (brush === BRUSH.CIRCLE) {
-        let bx = x + s / 2, by = y + s / 2;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(bx, by, s / 2, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.strokeStyle = "#fff7";
-        ctx.beginPath();
-        ctx.arc(Math.SQRT2 + bx, Math.SQRT2 + by, s / 2, 0, 2 * Math.PI);
-        ctx.stroke();
-      }
+      let s = [MODE.BUCKET, MODE.DROPPER].includes(mode)
+        ? rat
+        : size * rat
+        ;
+      
       const modeIcon = this.mode.current;
       modeIcon.style.transform = `translate(${ x + s }px, ${ y - modeIconSize }px)`;
     }
@@ -272,8 +272,8 @@ export class Canvas extends Component {
         <canvas
           id="cursor"
           ref={this.cursor}
-          width={curCanSize}
-          height={curCanSize}
+          width={width}
+          height={height}
         />
         <span id="mode" ref={this.mode}>
           <i className={`mdi ${mode && mode.icon}`} />

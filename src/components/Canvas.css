@@ -22,6 +22,7 @@
 }
 #container #cursor {
   pointer-events: none;
+  mix-blend-mode: difference;
 }
 #container #mode {
   pointer-events: none;
