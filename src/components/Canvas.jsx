@@ -22,6 +22,52 @@ function rotateVector([vx, vy], angle, [px, py] = [0, 0]) {
   ]; 
 }
 
+// return an array of points with opacities for a given point
+// TODO: currently assumes all coordinates are positive
+function explode([x, y]) {
+  const rx = x % 1, ry = y % 1;
+  const bx = Math.floor(x), by = Math.floor(y);
+  let p = [bx, by];
+  p.alpha = (1-rx) * (1-ry);
+  const out = [p];
+  if (rx > 0) {
+    p = [bx + 1, by];
+    p.alpha = rx * (1 - ry);
+    out.push(p);
+  }
+
+  if (ry > 0) {
+    p = [bx, by + 1];
+    p.alpha = (1 - rx) * ry;
+    out.push(p);
+  }
+
+  if (rx > 0 && ry > 0) {
+    p = [bx + 1, by + 1];
+    p.alpha = rx * ry;
+    out.push(p);
+  }
+
+  return out;
+}
+
+// TODO: moar efficient
+// TODO: threshold here might be an anti-pattern
+function interpolate(points, threshold = 0.5) {
+  return Object.entries(points.reduce((o, p) => {
+    return explode(p).reduce((o, p) => {
+      o[p] = (o[p] || 0) + p.alpha;
+      return o;
+    }, o);
+  }, {})).reduce((o, [p,a]) => {
+    if (a < threshold) return o;
+    let v = p.split(',').map(Number);
+    v.alpha = a; // TODO: maybe not include this?
+    o.push(v);
+    return o;
+  }, []);
+}
+
 function getBrushPositions (position, { 
   mode, 
   brush, 
@@ -55,16 +101,15 @@ function getBrushPositions (position, {
   }
 
   if (rs) {
-    // TODO: learn matrix rotations
-    const rots = [];
+    const rots = [], cx = width / 2 - 1/2, cy = height / 2 - 1/2;
     for (let theta = rs; theta < 360; theta += rs) {
       const pots = positions.map(p => rotateVector(
         p, 
         theta / 180 * Math.PI, 
-        [width / 2 - 1/2, height / 2 - 1/2]
+        [cx, cy]
       ));
       rots.push(
-        ...pots.map(a => a.map(v => Math.round(v)))
+        ...interpolate(pots, .44)
       );
     }
     positions.push(...rots);
