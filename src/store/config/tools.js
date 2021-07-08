@@ -37,13 +37,13 @@ export const symmetries = [0, 30, 45, 60, 90, 120, 180];
 export const toggles = [
   { 
     name: 'mirror-vertically', 
-    key: 'c', 
+    key: 'z', 
     value: MIRROR.VERTICAL,
     icon: 'mdi mdi-reflect-vertical'
   },
   { 
     name: 'mirror-horizontally', 
-    key: 'v', 
+    key: 'x', 
     value: MIRROR.HORIZONTAL,
     icon: 'mdi mdi-reflect-horizontal'
   }
@@ -97,12 +97,12 @@ export const tools = [
   },
   {
     name: 'undo',
-    key: 'z',
+    key: 'u',
     icon: 'mdi mdi-undo'
   },
   { 
     name: 'redo',
-    key: 'x',
+    key: 'i',
     icon: 'mdi mdi-redo'
   },
   { 

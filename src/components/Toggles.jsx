@@ -14,7 +14,7 @@ export default connect(
 )(({ mirror, setMirror }) => (
   <Fragment>
     <label 
-      data-key="c"
+      data-key="z"
       className="toggle mirror-vertical"
     >
       <input 
@@ -27,7 +27,7 @@ export default connect(
       <i className="mdi mdi-reflect-vertical" />
     </label>
     <label
-      data-key="v"
+      data-key="x"
       className="toggle mirror-horizontal"
     >
       <input 

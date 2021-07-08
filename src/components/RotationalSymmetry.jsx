@@ -12,7 +12,7 @@ export default connect(
   })
 )(({ rotationalSymmetry,  nextSymmetry }) => (
   <label
-    data-key="b"
+    data-key="c"
     className={cn({
       "rotational-symmetry":true,
       "active": rotationalSymmetry !== 0

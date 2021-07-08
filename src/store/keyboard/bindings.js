@@ -30,6 +30,6 @@ export default {
   }, {}),
   l: resetSize(),
   p: resetCanvasSize(),
-  b: nextSymmetry(),
+  c: nextSymmetry(),
   'Tab': nextBrush()
 };
