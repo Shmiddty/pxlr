@@ -6,7 +6,6 @@ import Mode from './Mode';
 import { Modes } from '../const/brush';
 
 
-
 // TODO: should maybe use keyCodes instead?
 export default [
   ...[].map.call('1234567890', (d, i) => ({
@@ -17,19 +16,20 @@ export default [
     } 
   })),
   ...mr({
-    [Modes.pencil]: { code: 'KeyQ', icon: 'pencil' },
-    [Modes.bucket]: { code: 'KeyW', icon: 'format-color-fill' },
-    [Modes.eraser]: { code: 'KeyE', icon: 'eraser-variant' },
-    [Modes.darken]: { code: 'KeyA', icon: { name: 'brightness-6', flipH: true } },
-    [Modes.lighten]:{ code: 'KeyS', icon: 'brightness-6' },
-    [Modes.dropper]:{ code: 'KeyD', icon: 'eyedropper' }
-  }, ({ code, icon }, mode) => ({
+    // this is funny, isn't it?
+    [Modes[Modes.pencil]]: { code: 'KeyQ', icon: 'pencil' },
+    [Modes[Modes.bucket]]: { code: 'KeyW', icon: 'format-color-fill' },
+    [Modes[Modes.eraser]]: { code: 'KeyE', icon: 'eraser-variant' },
+    [Modes[Modes.darken]]: { code: 'KeyA', icon: { name: 'brightness-6', flipH: true } },
+    [Modes[Modes.lighten]]:{ code: 'KeyS', icon: 'brightness-6' },
+    [Modes[Modes.dropper]]:{ code: 'KeyD', icon: 'eyedropper' }
+  }, ({ code, icon }, name, i) => ({
     component: Mode,
     props: {
       code,
-      mode,
       icon,
-      name: Modes[mode]
+      name,
+      mode: i // TODO: maybe use mode name instead?
     }
   }))
 ];

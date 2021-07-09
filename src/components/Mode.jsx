@@ -8,17 +8,25 @@ export const Mode = ({
   code,
   name,
   icon,
-  select
+  select,
+  selected
 }) => (
   <Select
     className="mode"
+    group="mode"
     label={upperFirst(name)} 
     code={code} 
     icon={icon} 
-    onSelect={select} 
+    onSelect={select}
+    selected={selected}
   />
 );
 
-export default connect(undefined, (dispatch, { mode }) => ({
-  select: () => dispatch(setMode(mode))
-}))(Mode);
+export default connect(
+  (state, { mode }) => ({ 
+    selected: state.config.mode === mode
+  }), 
+  (dispatch, { mode }) => ({
+    select: () => dispatch(setMode(mode))
+  })
+)(Mode);

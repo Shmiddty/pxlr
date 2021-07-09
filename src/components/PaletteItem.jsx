@@ -12,7 +12,7 @@ export const PaletteItem = ({
   selected, 
   update,
   select,
-  icon
+  icon = "palette-outline"
 }) => (
   <Key 
     className="color"

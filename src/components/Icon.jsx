@@ -1,5 +1,5 @@
 import React from 'react';
-import cn from '../utils/classnames';
+import cn from '../util/classnames';
 
 export default function Icon({ 
   name, 

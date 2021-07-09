@@ -7,6 +7,7 @@ import Tools from './Tools';
 import Keys from './Keys';
 import Sizes from './Sizes';
 import RotationalSymmetry from './RotationalSymmetry';
+import cfg from './KeyboardConfig';
 
 import '@mdi/font/css/materialdesignicons.min.css';
 import './Keyboard.css';
@@ -15,6 +16,10 @@ export default function Keyboard() {
   return (
     <div className="keyboard">
       <Keys />
+      { cfg.map((Key, i) => 
+      <Key.component key={i} {...Key.props} />
+      )}
+      {/*
       <Palette />
       <Brushes />
       <Modes />
@@ -22,6 +27,7 @@ export default function Keyboard() {
       <RotationalSymmetry />
       <Tools />
       <Sizes />
+      */}
     </div>
   );
 }

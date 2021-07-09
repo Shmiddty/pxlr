@@ -1,11 +1,13 @@
 import React from 'react';
 import Icon from '../Icon';
-import cn from '../../utils/classnames';
+import cn from '../../util/classnames';
 
 const WrappedIcon = ({ icon }) => (
   typeof icon === "string"
     ? <Icon name={icon} />
-    : <Icon {...icon} /> // TODO: safety dance
+    : typeof icon === "object"
+    ? <Icon {...icon} /> // TODO: safety dance
+    : false
 );
 
 
