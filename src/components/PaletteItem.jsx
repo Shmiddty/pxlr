@@ -39,7 +39,7 @@ export default connect(
     selected: state.palette.paletteIndex === index,
   }),
   (dispatch, { index }) => ({
-    update: e => dispatch(setPaletteColor(e.target.value)),
+    update: e => dispatch(setPaletteColor(index, e.target.value)),
     select: () => dispatch(setPaletteIndex(index))
   }),
 )(PaletteItem);

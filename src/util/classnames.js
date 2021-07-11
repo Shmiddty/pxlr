@@ -1,5 +1,5 @@
 export default function classnames(...args) {
-  return args.map(cn => 
+  return args.filter(Boolean).map(cn => 
     typeof cn === "string" ? cn:
       Object
         .entries(cn)

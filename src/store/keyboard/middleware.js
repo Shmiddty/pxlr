@@ -1,5 +1,6 @@
 import bindings from './bindings';
 
+// TODO: this whole thing must go away now.
 export default function (store) {
   window.addEventListener('keydown', e => {
     console.log(e.code, e.key, e.keyCode); 
@@ -20,9 +21,9 @@ export default function (store) {
     
     Array.from(document.querySelectorAll(`[data-key="${e.key}"]`))
       .forEach(ele => {
-        ele.className = [ele.className, 'activated'].join(' ');
+        ele.classList.add("activated");
         setTimeout(
-          () => ele.className = ele.className.replace(/ activated/, ''), 
+          () => ele.classList.remove("activated"),
           250
         );
       });

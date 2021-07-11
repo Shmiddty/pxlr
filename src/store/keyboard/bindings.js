@@ -1,3 +1,6 @@
+export default {};
+
+/*
 import { palette, modes, toggles, tools } from '../config/tools';
 import { 
   setMode, 
@@ -33,3 +36,4 @@ export default {
   c: nextSymmetry(),
   'Tab': nextBrush()
 };
+*/

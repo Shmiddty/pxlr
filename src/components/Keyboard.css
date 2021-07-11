@@ -208,6 +208,16 @@
   cursor: default;
   pointer-events: none;
 }
+.keyboard .select,
+.keyboard .once,
+.keyboard .toggle,
+.keyboard .color {
+  pointer-events: auto;
+}
+
+.keyboard .tool button {
+  display: none;
+}
 
 /* .keyboard .key[data-key="Tab"]::after,*/
 .keyboard .key[data-key="Caps"]::after, 

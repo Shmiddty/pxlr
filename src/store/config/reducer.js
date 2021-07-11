@@ -1,8 +1,9 @@
 import { MIRROR, MODE, BRUSH, brushes, symmetries } from './tools';
+import { Modes, Shapes } from '../../const/brush';
 import { types } from './actions';
 
 const initialState = {
-  mode: MODE.PENCIL,
+  mode: Modes.pencil,
   brush: BRUSH.SQUARE,
   mirror: MIRROR.NONE,
   rotationalSymmetry: false,
