@@ -211,6 +211,7 @@
 .keyboard .select,
 .keyboard .once,
 .keyboard .toggle,
+.keyboard .carousel,
 .keyboard .color {
   pointer-events: auto;
 }

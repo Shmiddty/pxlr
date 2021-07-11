@@ -1,5 +1,6 @@
 import React from 'react';
 import Icon from '../Icon';
+import useKeypress from '../useKeypress';
 import cn from '../../util/classnames';
 
 const WrappedIcon = ({ icon }) => (
@@ -18,8 +19,11 @@ export default function Key({
   icon, 
   children,
   prependChildren = false,
+  onKey = NP => NP,
   ...rest // TODO: this is usually kinda finicky
 }) {
+  useKeypress(code, onKey);
+
   return (
     <label
       data-key={code}

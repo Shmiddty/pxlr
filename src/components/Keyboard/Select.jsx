@@ -12,6 +12,7 @@ export default function Select({
   return (
     <Key 
       className={cn('select', className)} 
+      onKey={onSelect}
       {...props}
       prependChildren 
     >

@@ -2,8 +2,10 @@ import mr from '../util/mapReduce';
 
 import PaletteItem from './PaletteItem';
 import Tool from './Tool';
-import Mode from './Mode';
+import BrushMode from './Mode';
+import BrushShape from './BrushShape';
 import Toggle from './Toggle';
+import RotationalSymmetry from './RotationalSymmetry';
 import { Modes, Shapes } from '../const/brush';
 import { Tools } from '../const/tools';
 import { Toggles } from '../const/toggles';
@@ -25,7 +27,7 @@ export default [
     'KeyS': { mode: Modes.lighten, icon: 'brightness-6' },
     'KeyD': { mode: Modes.dropper, icon: 'eyedropper' }
   }, ({ mode, icon }, code, i) => ({
-    component: Mode,
+    component: BrushMode,
     props: {
       code,
       icon,
@@ -67,5 +69,23 @@ export default [
       icon,
       name: Toggles[toggle]
     }
-  }))
+  })),
+  {
+    component: BrushShape,
+    props: {
+      code: 'Tab',
+      options: [
+        { shape: Shapes.square, icon: 'square-outline', label: 'Square' },
+        { shape: Shapes.circle, icon: 'circle-outline', label: 'Circle' }
+      ]
+    }
+  },
+  {
+    component: RotationalSymmetry,
+    props: {
+      code: 'KeyC',
+      icon: 'rotate-right',
+      options: [0, 30, 45, 60, 90, 120, 180]
+    }
+  }
 ];

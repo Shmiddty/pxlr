@@ -3,7 +3,7 @@ import makePersistence from './redux-localStorage';
 //import logger from './redux-logger';
 
 import reducer from "./reducer";
-import keybindings from './keyboard/middleware';
+//import keybindings from './keyboard/middleware';
 
 const defaultState = reducer(undefined, {});
 
@@ -14,7 +14,7 @@ const [initialState, persist] = makePersistence(
 
 const middleware = [
   //logger, 
-  keybindings, 
+  //keybindings, 
   persist
 ];
 

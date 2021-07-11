@@ -6,6 +6,7 @@ export default function Toggle({ className, onToggle, checked, ...props }) {
   return (
     <Key
       className={cn('toggle', className)} 
+      onKey={onToggle}
       {...props}
       prependChildren 
     >

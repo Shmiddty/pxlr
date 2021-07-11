@@ -1,6 +1,9 @@
 import React from 'react';
-import bindings from '../store/keyboard/bindings';
 import keys from '../store/keyboard/keys';
+import cfg from './KeyboardConfig';
+
+const used = cfg.map(k => k.props.code);
+const unused = keys.filter(k => !used.includes(k));
 
 function codeToLabel(code) {
   code = code.replace(/Digit|Key/, '');
@@ -21,13 +24,13 @@ function codeToLabel(code) {
 }
 
 export default function Keys() {
-  return  keys.filter(key => !bindings[key]).map((key, i) => (
-    <button 
+  return  unused.map((key, i) => (
+    <label 
       key={key} 
       className="key" 
       data-key={key}
     >
       <span>{codeToLabel(key)}</span>
-    </button>
+    </label>
   ));
 }
