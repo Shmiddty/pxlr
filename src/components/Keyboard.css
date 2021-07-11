@@ -3,30 +3,6 @@
 }
 
 /*
-.tool.previous-color i,
-.tool.next-color i {
-  position: relative;
-}
-
-.tool.previous-color i::after,
-.tool.next-color i::after {
-  content: "\F03D8";
-  display: inline-block;
-  font: normal normal normal 24px/1 "Material Design Icons";
-  text-rendering: auto;
-  line-height: inherit;
-  -webkit-font-smoothing: antialiased;
-  font-size: .7em;
-  vertical-align: top;
-}
-.tool.previous-color i::before,
-.tool.next-color i::before {
-  font-size: .5em !important;
-  position: absolute;
-  bottom: -0.4em;
-  right: -0.3em;
-}
-
 */
 
 .keyboard {
@@ -125,6 +101,31 @@
 .keyboard .toggle input {
   display: none;
 }
+
+.keyboard .tool.PreviousColor .icon,
+.keyboard .tool.NextColor .icon {
+  position: relative;
+}
+
+.keyboard .tool.PreviousColor .icon::after,
+.keyboard .tool.NextColor .icon::after {
+  content: "\F03D8";
+  display: inline-block;
+  font: normal normal normal 24px/1 "Material Design Icons";
+  text-rendering: auto;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  font-size: .7em;
+  vertical-align: top;
+}
+.keyboard .tool.PreviousColor .icon::before,
+.keyboard .tool.NextColor .icon::before {
+  font-size: .5em !important;
+  position: absolute;
+  bottom: -0.3em;
+  right: -0.3em;
+}
+
 
 /* Special Styling */
 .keyboard .color {

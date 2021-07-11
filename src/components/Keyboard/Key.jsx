@@ -35,7 +35,7 @@ export default function Key({
   return (
     <label
       data-key={code}
-      className={cn('key', className, active && "activated")} 
+      className={cn('key', label, className, active && "activated")} 
       title={`(${code}) ${label}`}
       {...rest}
     >
