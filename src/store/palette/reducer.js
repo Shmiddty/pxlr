@@ -1,5 +1,6 @@
 import { types as paletteTypes } from './actions';
 import { types as configTypes } from '../config/actions';
+import { Tools } from '../../const/tools';
 
 const initialState = {
   palette: ["#ff0000", "#ffa200", "#eeff00", "#44ff00", "#00ffee", "#0400ff", "#a600ff", "#ff00ea", "#000000", "#ffffff"],
@@ -33,7 +34,7 @@ export default function (state = initialState, action) {
       };
     case configTypes.tool:
       switch (action.payload) {
-        case "next-color":
+        case Tools.nextColor:
           paletteIndex = 
             (state.paletteIndex + 1) % 
             state.palette.length;
@@ -41,7 +42,7 @@ export default function (state = initialState, action) {
             ...state,
             paletteIndex,
           };
-        case "previous-color":
+        case Tools.previousColor:
           paletteIndex = 
             (state.palette.length + state.paletteIndex - 1) % 
             state.palette.length;

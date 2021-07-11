@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Icon from '../Icon';
 import useKeypress from '../useKeypress';
 import cn from '../../util/classnames';
@@ -11,7 +11,6 @@ const WrappedIcon = ({ icon }) => (
     : false
 );
 
-
 export default function Key({ 
   code,
   label = code,
@@ -20,14 +19,23 @@ export default function Key({
   children,
   prependChildren = false,
   onKey = NP => NP,
+  activeTime = 250,
   ...rest // TODO: this is usually kinda finicky
 }) {
-  useKeypress(code, onKey);
+  const [active, setActive] = useState(false);
+  const activateOnKey = useMemo(() => {
+    return function() {
+      onKey();
+      setActive(true);
+      setTimeout(() => setActive(false), activeTime);
+    }
+  }, [activeTime, onKey]);
+  useKeypress(code, activateOnKey);
 
   return (
     <label
       data-key={code}
-      className={cn('key', className)} 
+      className={cn('key', className, active && "activated")} 
       title={`(${code}) ${label}`}
       {...rest}
     >

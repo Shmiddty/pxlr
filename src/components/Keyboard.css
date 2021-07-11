@@ -2,6 +2,7 @@
   font-size: 40px;
 }
 
+/*
 .tool.previous-color i,
 .tool.next-color i {
   position: relative;
@@ -78,10 +79,6 @@
   padding-left: .5em;
   outline: none;
 }
-/* TODO: this is a hacky way to visually group the size inputs
- * with their respective increase/decrease buttons. It would be 
- * better to refactor them into grouped components
- */
 .keyboard .size {
   width: 3.54em;
   z-index: 0;
@@ -106,7 +103,7 @@
 .keyboard .width2 i,
 .keyboard .size.width2 {
   width: 2.25em;
-  margin-left: -1.25em; /* TODO: hacky solution to cover two butotns */
+  margin-left: -1.25em;
 }
 
 .keyboard .color {
@@ -195,6 +192,8 @@
   text-shadow: 1px 1px 3px #000;
 }
 
+*/
+
 .keyboard {
   display: grid;
   grid-template-columns: repeat(72, .25em);
@@ -202,22 +201,118 @@
   grid-column-gap: 0;
   grid-row-gap: .25em;
 }
+
+.keyboard .key {
+  display: inline-block;
+  border-radius: 3px;
+  border: solid 1px transparent;
+  box-shadow: 1px 1px 2px #0005;
+  text-shadow: 1px 1px 2px #0005;
+  font-size: inherit;
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 1px;
+  transition: all 250ms linear;
+  user-select: none;
+  padding: 0; 
+}
+
+.keyboard .key span {
+  font-size: .5em;
+  vertical-align: top;
+}
+.keyboard .icon:before {
+  font-size: .7em;
+  vertical-align: top;
+}
+
 .keyboard .key {
   background: #335;
   color: #77b;
   cursor: default;
   pointer-events: none;
+  opacity: 0.75;
 }
 .keyboard .select,
 .keyboard .once,
 .keyboard .toggle,
 .keyboard .carousel,
 .keyboard .color {
+  background: #557;
+  color: #eef;
+  cursor: pointer;
   pointer-events: auto;
+  opacity: 1;
 }
 
-.keyboard .tool button {
+.keyboard .tool {
+  background: #a0f;
+}
+.keyboard .mode {
+  background: #0af;
+  opacity: 0.5;
+}
+.keyboard .toggle {
+  background: #0c4;
+  opacity: 0.5;
+}
+.keyboard .carousel {
+  background: #fa0;
+}
+.keyboard .color {
+  opacity: 0.5;
+}
+
+.keyboard .key.active,
+.keyboard .key.activated,
+.keyboard .key.selected {
+  border-color: #fff7;
+  opacity: 1;
+}
+
+.keyboard .select span,
+.keyboard .once span,
+.keyboard .toggle span,
+.keyboard .carousel span,
+.keyboard .color span,
+.keyboard .key[data-key="Space"] span {
   display: none;
+}
+
+.keyboard .tool button,
+.keyboard .select input,
+.keyboard .toggle input {
+  display: none;
+}
+
+/* Special Styling */
+.keyboard .color {
+  position: relative;
+}
+.keyboard .color input[type="color"] {
+  display: block;
+  visibility: hidden;
+  position: absolute;
+  bottom: 0;
+}
+.keyboard .rotational-symmetry {
+  position: relative;
+  cursor: pointer;
+}
+.keyboard .rotational-symmetry.active span {
+  display: block;
+  position: absolute;
+  font-size: .3em;
+  line-height: 1;
+  bottom: .35em;
+  right: .35em;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px #000;
 }
 
 /* .keyboard .key[data-key="Tab"]::after,*/

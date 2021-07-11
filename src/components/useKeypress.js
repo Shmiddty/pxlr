@@ -2,7 +2,10 @@ import { useEffect } from 'react';
 
 const listeners = {};
 function handleKeypress (e) {
-  console.log(e.code);
+  if (e.repeat) return;
+  if (e.ctrlKey || e.shiftKey || e.altKey) return;
+  if (document.activeElement.tagName === "INPUT") return;
+
   const cb = listeners[e.code];
   if (cb) {
     e.preventDefault();

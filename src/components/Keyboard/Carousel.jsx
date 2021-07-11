@@ -5,14 +5,14 @@ import Key from './Key';
 export default function Carousel({ 
   className,
   options,
+  onNext,
   selectedIndex = 0,
   selectedItem = options[selectedIndex],
-  onNext,
   icon = selectedItem.icon,
-  label = selectedItem.label || selectedItem,
+  label = selectedItem ? selectedItem.label || selectedItem : '',
   ...props 
 }) {
-  return (
+  return (console.log(className, options, selectedItem, selectedIndex),
     <Key 
       className={cn('carousel', className)} 
       icon={icon}

@@ -11,7 +11,7 @@ export default function Select({
 }) {
   return (
     <Key 
-      className={cn('select', className)} 
+      className={cn('select', className, selected && "selected" )} 
       onKey={onSelect}
       {...props}
       prependChildren 

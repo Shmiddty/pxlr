@@ -5,7 +5,7 @@ import Key from './Key';
 export default function Toggle({ className, onToggle, checked, ...props }) {
   return (
     <Key
-      className={cn('toggle', className)} 
+      className={cn('toggle', className, checked && "active")} 
       onKey={onToggle}
       {...props}
       prependChildren 

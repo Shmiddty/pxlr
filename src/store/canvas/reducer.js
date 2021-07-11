@@ -1,6 +1,7 @@
 import { bfs } from '../../util/search';
 import { types as canvasTypes } from './actions';
 import { types as configTypes } from '../config/actions';
+import { Tools } from '../../const/tools';
 
 const maxWidth = 256;
 const maxHeight = 256;
@@ -134,55 +135,55 @@ export default function (state = initialState, action) {
     // TODO: should this be a separate reducer?
     case configTypes.tool:
       switch (action.payload) {
-        case "clear":
+        case Tools.clear:
           next = {
             ...state,
             pxls: {}
           };
           break;
-        case "increase-dimensions":
+        case Tools.increaseCanvasSize:
           next = {
             ...state,
             width: Math.min(maxWidth, state.width + 8),
             height: Math.min(maxHeight, state.height + 8)
           };
           break;
-        case "decrease-dimensions":
+        case Tools.decreaseCanvasSize:
           next = {
             ...state,
             width: Math.max(minWidth, state.width - 8),
             height: Math.max(minHeight, state.height - 8)
           };
           break;
-        case "rotate-clockwise":
+        case Tools.rotateClockwise:
           next = {
             ...state,
             pxls: rotate(state.pxls, state.width, true)
           };
           break;
-        case "rotate-counter-clockwise":
+        case Tools.rotateCounterClockwise:
           next = {
             ...state,
             pxls: rotate(state.pxls, state.width, false)
           };
           break;
-        case "flip-horizontally":
+        case Tools.flipHorizontally:
           next = {
             ...state,
             pxls: flip(state.pxls, state.width, false)
           };
           break;
-        case "flip-vertically":
+        case Tools.flipVertically:
           next = {
             ...state,
             pxls: flip(state.pxls, state.width, true)
           };
           break;
-        case "undo":
+        case Tools.undo:
           if (hidx > 0) next = hist[--hidx];
           else return state;
           break;
-        case "redo":
+        case Tools.redo:
           if (hidx < hist.length - 1) next = hist[++hidx];
           else return state;
           break;

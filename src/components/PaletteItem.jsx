@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import cn from '../util/classnames';
 import Key from './Keyboard/Key';
 import { 
   setPaletteColor, 
@@ -15,21 +16,16 @@ export const PaletteItem = ({
   icon = "palette-outline"
 }) => (
   <Key 
-    className="color"
+    className={cn("color", selected && 'selected')}
     style={{ background: color }}
     code={code}
     icon={icon}
     label={color}
+    onClick={select}
+    onKey={select}
     prependChildren
   >
     <input type="color" onChange={update} value={color} />
-    <input // TODO: might not need the radio, buuuuut 
-      type="radio" 
-      name="palette" 
-      value={color}
-      checked={selected}
-      onChange={select}
-    />
   </Key>
 );
 

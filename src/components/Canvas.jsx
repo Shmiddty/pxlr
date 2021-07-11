@@ -88,8 +88,8 @@ function getBrushPositions (position, {
       let r = size / 2;
       let a = j - size / 2 + 1/2, b = i - size / 2 + 1/2;
       if (
-        brush === BRUSH.SQUARE || 
-        (brush === BRUSH.CIRCLE && magSqr([a, b]) < r**2)
+        brush === Shapes.square || 
+        (brush === Shapes.circle && magSqr([a, b]) < r**2)
       ) {
         positions.push(...[
           [x, y], 

@@ -11,6 +11,7 @@ export default function Icon({
   return (
     <i 
       className={cn({
+        "icon": true,
         "mdi": true,
         ["mdi-" + name]: true,
         ["mdi-rotate-" + rotate]: [45,90,135,180,225,270,315].includes(rotate),

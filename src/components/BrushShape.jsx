@@ -9,10 +9,10 @@ export const BrushShape = (props) => (
 );
 
 export default connect(
-  state => ({
-    selectedIndex: state.config.brush
+  (state, { options }) => ({
+    selectedItem: options.find(b => b.shape === state.config.brush)
   }),
-  (dispatch, { options })  => ({
+  dispatch => ({
     onNext: () => dispatch(nextBrush())
   })
 )(BrushShape);
