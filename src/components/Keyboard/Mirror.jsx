@@ -1,18 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
-import ToggleKey from './Keyboard/Toggle';
+import ToggleKey from './Toggle';
 
 // TODO: get rid of the icky hacky
-import { setMirror } from '../store/config/actions';
-import { Toggles } from '../const/toggles';
+import { setMirror } from '../../store/config/actions';
+import { Toggles } from '../../const/toggles';
 
-export const Toggle = ({ 
+export const Mirror = ({ 
   code,
   name,
   icon,
   checked,
-  toggle
+  toggle,
+  uid
 }) => (
   <ToggleKey
     label={upperFirst(name)} 
@@ -36,4 +37,4 @@ export default connect(
         : 2
     ))
   })
-)(Toggle);
+)(Mirror);

@@ -1,6 +1,6 @@
 import React from 'react';
-import keys from '../store/keyboard/keys';
-import cfg from './KeyboardConfig';
+import keys from '../../store/keyboard/keys';
+import cfg from './config';
 
 const used = cfg.map(k => k.props.code).flat();
 const unused = keys.filter(k => !used.includes(k));

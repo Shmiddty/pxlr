@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
-import { setMode } from '../store/config/actions';
-import Select from './Keyboard/Select';
+import { setMode } from '../../store/config/actions';
+import Select from './Select';
 
 export const BrushMode = ({ 
   code,

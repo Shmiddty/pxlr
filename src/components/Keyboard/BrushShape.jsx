@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { nextBrush } from '../store/config/actions';
+import { nextBrush } from '../../store/config/actions';
 
-import Carousel from './Keyboard/Carousel';
+import Carousel from './Carousel';
 
 export const BrushShape = (props) => (
   <Carousel className="brush-shape" {...props} />

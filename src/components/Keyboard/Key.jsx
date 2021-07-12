@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Icon from '../Icon';
-import useKeypress from '../useKeypress';
+import useKeypress from './useKeypress';
 import cn from '../../util/classnames';
 
 const WrappedIcon = ({ icon }) => (

@@ -1,16 +1,16 @@
-import mr from '../util/mapReduce';
+import mr from '../../util/mapReduce';
 
 import PaletteItem from './PaletteItem';
 import Tool from './Tool';
 import BrushMode from './Mode';
 import BrushShape from './BrushShape';
-import Toggle from './Toggle';
+import Mirror from './Mirror';
 import RotationalSymmetry from './RotationalSymmetry';
 import CanvasSize from './CanvasSize';
 import BrushSize from './BrushSize';
-import { Modes, Shapes } from '../const/brush';
-import { Tools } from '../const/tools';
-import { Toggles } from '../const/toggles';
+import { Modes, Shapes } from '../../const/brush';
+import { Tools } from '../../const/tools';
+import { Toggles } from '../../const/toggles';
 
 export default [
   ...[].map.call('1234567890', (d, i) => ({
@@ -59,7 +59,7 @@ export default [
     'KeyZ': { toggle: Toggles.mirrorVertically, icon: 'reflect-vertical' },
     'KeyX': { toggle: Toggles.mirrorHorizontally, icon: 'reflect-horizontal' }
   }, ({ toggle, icon }, code, i) => ({
-    component: Toggle,
+    component: Mirror,
     props: {
       uid: toggle,
       code,

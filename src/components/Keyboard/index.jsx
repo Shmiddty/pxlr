@@ -1,6 +1,6 @@
 import React from 'react';
 import Keys from './Keys';
-import cfg from './KeyboardConfig';
+import cfg from './config';
 
 import '@mdi/font/css/materialdesignicons.min.css';
 import './Keyboard.css';

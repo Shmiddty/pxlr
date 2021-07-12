@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
-import { activateTool } from '../store/config/actions';
-import Once from './Keyboard/Once';
+import { activateTool } from '../../store/config/actions';
+import Once from './Once';
 
 export const Tool = ({ 
   code,

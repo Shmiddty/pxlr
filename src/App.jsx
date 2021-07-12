@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import store from './store';
 
-import Keyboard from './components/Keyboard';
+import Keyboard from './components/Keyboard/';
 import Canvas from './components/Canvas';
 import SideLength from './components/SideLength';
 import FileImport from './components/FileImport';

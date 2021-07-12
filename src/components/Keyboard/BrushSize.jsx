@@ -2,16 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { 
   resetSize, 
-  resize 
-} from '../store/canvas/actions';
+  setSize
+} from '../../store/config/actions';
 
-import Numeric from './Keyboard/Numeric';
+import Numeric from './Numeric';
 
 function doStep(size, dir = 1, minSize = 8, maxSize = 256, stepSize = 8) {
   return Math.max(minSize, Math.min(maxSize, size + dir * stepSize));
 }
 
-export const CanvasSize = ({ 
+export const BrushSize = ({ 
   inputProps,
   decreaseProps,
   increaseProps
@@ -25,11 +25,11 @@ export const CanvasSize = ({
 
 export default connect(
   state => ({
-    size: state.canvas.width
+    size: state.config.size
   }),
   dispatch => ({
     resetSize: () => dispatch(resetSize()),
-    setSize: size => dispatch(resize(size))
+    setSize: size => dispatch(setSize(size))
   }),
   (
     { size }, 
@@ -58,4 +58,4 @@ export default connect(
       onClick: () => setSize(doStep(size, 1, min, max, step))
     }
   })
-)(CanvasSize);
+)(BrushSize);

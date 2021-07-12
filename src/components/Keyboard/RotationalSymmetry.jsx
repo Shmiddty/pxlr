@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import cn from '../util/classnames';
-import { nextSymmetry } from '../store/config/actions';
+import cn from '../../util/classnames';
+import { nextSymmetry } from '../../store/config/actions';
 
-import Carousel from './Keyboard/Carousel';
+import Carousel from './Carousel';
 
 export const RotationalSymmetry = (props) => (
   <Carousel 

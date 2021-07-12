@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import cn from '../util/classnames';
-import Key from './Keyboard/Key';
+import cn from '../../util/classnames';
 import { 
   setPaletteColor, 
   setPaletteIndex
-} from '../store/palette/actions';
+} from '../../store/palette/actions';
+
+import Key from './Key';
 
 export const PaletteItem = ({
   code,
