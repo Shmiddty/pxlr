@@ -4,8 +4,10 @@ import Color from 'color';
 import debounce from 'lodash/debounce';
 import { setColor, setPaletteIndex } from '../store/palette/actions';
 import { setPxls, bucket } from '../store/canvas/actions';
-import { MODE, MIRROR, modes, BRUSH } from '../store/config/tools';
+import { MIRROR } from '../store/config/tools';
+import { Modes, Shapes } from '../const/brush';
 import "./Canvas.css";
+import Icon from './Icon';
 
 const modeIconSize = 32;
 
@@ -77,7 +79,7 @@ function getBrushPositions (position, {
   height,
   rotationalSymmetry: rs
 }) {
-  if ([MODE.BUCKET, MODE.DROPPER].includes(mode)) return [position];
+  if ([Modes.bucket, Modes.dropper].includes(mode)) return [position];
   
   let [px, py] = position;
   let positions = [];
@@ -87,8 +89,8 @@ function getBrushPositions (position, {
       let r = size / 2;
       let a = j - size / 2 + 1/2, b = i - size / 2 + 1/2;
       if (
-        brush === BRUSH.SQUARE || 
-        (brush === BRUSH.CIRCLE && magSqr([a, b]) < r**2)
+        brush === Shapes.square || 
+        (brush === Shapes.circle && magSqr([a, b]) < r**2)
       ) {
         positions.push(...[
           [x, y], 
@@ -227,7 +229,7 @@ export class Canvas extends Component {
       mode,
       size
     } = this.props;
-    const isSinglePixelMode = [MODE.BUCKET, MODE.DROPPER].includes(mode);
+    const isSinglePixelMode = [Modes.bucket, Modes.dropper].includes(mode);
     const s = isSinglePixelMode ? 1 : size;
     return [
       Math.floor(offsetX / this._width * cols - s/2),
@@ -308,7 +310,7 @@ export class Canvas extends Component {
       const [x, y] = pos.map(c => c * rat);
 
       // TODO: maybe show darken/lighten as well?
-      ctx.fillStyle = mode === MODE.PENCIL 
+      ctx.fillStyle = mode === Modes.pencil
         ? this.props.color
         : "#7777"
         ;
@@ -317,7 +319,7 @@ export class Canvas extends Component {
         ctx.fillRect(x, y, 1, 1);
       });
       
-      let s = [MODE.BUCKET, MODE.DROPPER].includes(mode)
+      let s = [Modes.bucket, Modes.dropper].includes(mode)
         ? rat
         : size * rat
         ;
@@ -329,7 +331,16 @@ export class Canvas extends Component {
 
   render () {
     const { width, height } = this.props;
-    const mode = modes[this.props.mode];
+    let modeIcon;
+    switch (this.props.mode) {
+      case Modes.pencil: modeIcon = 'pencil';break;
+      case Modes.bucket: modeIcon = 'format-color-fill'; break;
+      case Modes.eraser: modeIcon = 'eraser-variant'; break;
+      case Modes.darken: modeIcon = 'brightness-6 mdi-flip-h'; break;
+      case Modes.lighten: modeIcon = 'brightness-6'; break;
+      case Modes.dropper: modeIcon = 'eyedropper'; break;
+      default: break;
+    }
     return (
       <div id="container">
         <canvas
@@ -351,7 +362,7 @@ export class Canvas extends Component {
           height={height}
         />
         <span id="mode" ref={this.mode}>
-          <i className={`mdi ${mode && mode.icon}`} />
+          <Icon name={modeIcon} />
         </span>
       </div>
     );
@@ -374,16 +385,16 @@ export default connect(
       } = props;
       return getBrushPositions(position, props).reduce((o, p) => {
         switch (mode) {
-          case MODE.PENCIL:
+          case Modes.pencil:
             o[p] = color;
             break;
-          case MODE.ERASER:
+          case Modes.eraser:
             o[p] = null;
             break;
-          case MODE.DARKEN:
+          case Modes.darken:
             if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
             break;
-          case MODE.LIGHTEN:
+          case Modes.lighten:
               if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
             break;
           default: break;
@@ -402,37 +413,37 @@ export default connect(
       let positions = getBrushPositions(position, props);
       
       switch (mode) {
-        case MODE.PENCIL:
+        case Modes.pencil:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
               o[p] = color;
               return o;
             }, {}))
           );
-        case MODE.BUCKET:
+        case Modes.bucket:
           return dispatch(bucket(position, color));
-        case MODE.ERASER:
+        case Modes.eraser:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
               o[p] = null;
               return o;
             }, {}))
           );
-        case MODE.DARKEN:
+        case Modes.darken:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
               if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
               return o;
             }, {}))
           );
-        case MODE.LIGHTEN:
+        case Modes.lighten:
           return dispatch(
             setPxls(positions.reduce((o, p) => {
               if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
               return o;
             }, {}))
           );
-        case MODE.DROPPER:
+        case Modes.dropper:
           if (pxls[position]) {
             // Switch to the color already in the palette instead of changing the current color
             if (palette.includes(pxls[position])) {
@@ -446,7 +457,7 @@ export default connect(
       }
     },
     updatePxls: function(pxls, { mode }) {
-      if (mode === MODE.BUCKET || mode === MODE.DROPPER) return;
+      if (mode === Modes.bucket || mode === Modes.dropper) return;
       dispatch(setPxls(pxls));
     }
   })

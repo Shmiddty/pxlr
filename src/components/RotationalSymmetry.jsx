@@ -3,24 +3,20 @@ import { connect } from 'react-redux';
 import cn from '../util/classnames';
 import { nextSymmetry } from '../store/config/actions';
 
+import Carousel from './Keyboard/Carousel';
+
+export const RotationalSymmetry = (props) => (
+  <Carousel 
+    className={cn("rotational-symmetry", props.selectedIndex && 'active')} 
+    {...props}
+  />
+);
+
 export default connect(
-  state => ({
-    rotationalSymmetry: state.config.rotationalSymmetry
-  }), 
-  dispatch => ({
-    nextSymmetry: () => dispatch(nextSymmetry())
+  (state, { options }) => ({
+    selectedIndex: options.indexOf(state.config.rotationalSymmetry)
+  }),
+  (dispatch, { options })  => ({
+    onNext: () => dispatch(nextSymmetry())
   })
-)(({ rotationalSymmetry,  nextSymmetry }) => (
-  <label
-    data-key="c"
-    className={cn({
-      "rotational-symmetry":true,
-      "active": rotationalSymmetry !== 0
-    })}
-    data-value={rotationalSymmetry}
-    onClick={nextSymmetry}
-  >
-    <i className="mdi mdi-rotate-right" />
-    <span>{rotationalSymmetry}</span>
-  </label>
-));
+)(RotationalSymmetry);
