@@ -25,10 +25,12 @@ function rotateVector([vx, vy], angle, [px, py] = [0, 0]) {
 }
 
 // return an array of points with opacities for a given point
-// TODO: currently assumes all coordinates are positive
 function explode([x, y]) {
-  const rx = x % 1, ry = y % 1;
-  const bx = Math.floor(x), by = Math.floor(y);
+  // Shift the coordinates by this value to avoid dealing with zeros.
+  const shift = 4096;
+  const x0 = x + shift, y0 = y + shift;
+  const rx = x0 % 1, ry = y0 % 1;
+  const bx = Math.floor(x0) - shift, by = Math.floor(y0) - shift;
   let p = [bx, by];
   p.alpha = (1-rx) * (1-ry);
   const out = [p];
