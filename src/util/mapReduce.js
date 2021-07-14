@@ -1,3 +1,4 @@
+// TODO: this is the wrong name
 export default function mapReduce(obj, cb = I=>I) {
   return Object.entries(obj).reduce((o, [k,v], i) => {
     o[i] = cb(v, k, i);
