@@ -1,7 +1,10 @@
-import { bfs } from '../../util/search';
 import { types as canvasTypes } from './actions';
 import { types as configTypes } from '../config/actions';
 import { Tools } from '../../const/tools';
+import { fill, flip, rotate } from '../../lib/pxls';
+
+// TODO: it is said that computations shouldn't be performed in reducers...
+
 
 const maxWidth = 256;
 const maxHeight = 256;
@@ -25,54 +28,6 @@ function removeNulls(pxls) {
       return o;
     }, {});
 }
-
-function rotate (pxls, side, cw = true) {
-  return Object.entries(pxls).reduce((o, [key, val]) => {
-      let [x,y] = key.split(',').map(Number);
-      let pos = cw
-        ? [side - y - 1, x]
-        : [y, side - x - 1];
-      o[pos] = val;
-      return o;
-    }, {});
-}
-
-
-function flip (pxls, side, vertical = false) {
-  return Object.entries(pxls).reduce((o, [key, val]) => {
-    let [x, y] = key.split(',').map(Number);
-    let pos = [
-      !vertical ? side - x - 1 : x,
-      !vertical ? y : side - y - 1
-    ];
-    o[pos] = val;
-    return o;
-  }, {});
-};
-
-function bucket ({ position, color }, pxls, side) {
-  let init = pxls[position];
-  return bfs(
-    position, 
-    ([x,y]) => [
-      [x, y-1],
-      [x, y+1],
-      [x-1, y],
-      [x+1, y]
-    ],
-    ([x,y]) => (
-      x >= 0 && 
-      x < side && 
-      y >= 0 && 
-      y < side && 
-      pxls[[x,y]] === init
-    )
-  ).reduce((o, pos) => {
-    o[pos] = color;
-    return o;
-  }, Object.assign({}, pxls));
-}
-
 export default function (state = initialState, action) {
   let next;
   switch (action.type) {
@@ -93,7 +48,12 @@ export default function (state = initialState, action) {
     case canvasTypes.bucket:
       next = {
         ...state,
-        pxls: bucket(action.payload, state.pxls, state.width)
+        pxls: fill(
+          state.pxls, 
+          action.payload.position, 
+          action.payload.color, 
+          [state.width, state.height]
+        )
       };
       break;
     case canvasTypes.setPxl: 
@@ -158,25 +118,25 @@ export default function (state = initialState, action) {
         case Tools.rotateClockwise:
           next = {
             ...state,
-            pxls: rotate(state.pxls, state.width, true)
+            pxls: rotate(state.pxls, true, [state.width, state.height])
           };
           break;
         case Tools.rotateCounterClockwise:
           next = {
             ...state,
-            pxls: rotate(state.pxls, state.width, false)
+            pxls: rotate(state.pxls, false, [state.width, state.height])
           };
           break;
         case Tools.flipHorizontally:
           next = {
             ...state,
-            pxls: flip(state.pxls, state.width, false)
+            pxls: flip(state.pxls, false, [state.width, state.height])
           };
           break;
         case Tools.flipVertically:
           next = {
             ...state,
-            pxls: flip(state.pxls, state.width, true)
+            pxls: flip(state.pxls, true, [state.width, state.height])
           };
           break;
         case Tools.undo:
