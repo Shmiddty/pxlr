@@ -298,12 +298,19 @@ export class Canvas extends Component {
     const { width, size, mode } = this.props;
     const ctx = this._cursorCtx;
     const rat = this._width / width;
-    
+    const showReticule = [Modes.bucket, Modes.dropper].includes(mode);
+
     if (!clearAll && this._lastMouse) {
-      getBrushPositions(this.pointerToPos(this._lastMouse), this.props)
-        .forEach(([x,y]) => 
-          ctx.clearRect(x, y, 1, 1)
-        );
+      let pos = this.pointerToPos(this._lastMouse)
+      if (showReticule) {
+        let [px, py] = pos;
+        ctx.clearRect(px - 4, py - 4, 9, 9);
+      } else {
+        getBrushPositions(pos, this.props)
+          .forEach(([x,y]) => 
+            ctx.clearRect(x, y, 1, 1)
+          );
+      }
     } else ctx.clearRect(0, 0, width, width);
 
     if (this._mouse) {
@@ -318,17 +325,34 @@ export class Canvas extends Component {
         : "#7777"
         ;
 
-      getBrushPositions(pos, this.props).forEach(([x,y]) => {
-        ctx.fillRect(x, y, 1, 1);
-      });
-      
-      let s = [Modes.bucket, Modes.dropper].includes(mode)
+      let s = showReticule
         ? rat
         : size * rat
         ;
       
+      if (showReticule) {
+        let [px, py] = pos;
+        ctx.fillStyle = "#777e";
+        ctx.fillRect(px, py, 1, 1);
+        ctx.fillStyle = "#fffe";
+        ctx.fillRect(px, py - 4, 1, 3);
+        ctx.fillRect(px - 4, py, 3 , 1);
+        ctx.fillStyle = "#000e";
+        ctx.fillRect(px + 2, py, 3, 1);
+        ctx.fillRect(px, py + 2, 1, 3);
+      } else {
+        getBrushPositions(pos, this.props).forEach(([x,y]) => {
+          ctx.fillRect(x, y, 1, 1);
+        });
+      }
       const modeIcon = this.mode.current;
-      modeIcon.style.transform = `translate(${ x + s }px, ${ y - modeIconSize }px)`;
+      modeIcon.className = Modes[mode];
+      modeIcon.style.transform = `translate(${x+s}px, ${y-modeIconSize}px)`;
+      if (mode === Modes.dropper) {
+        modeIcon.style.background = this.props.pxls[pos] || '';
+      } else {
+        modeIcon.style.background = '';
+      }
     }
   }
 
