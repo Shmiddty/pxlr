@@ -20,7 +20,7 @@ export const BackgroundColor = ({
   return (
     <Key 
       className={"color background-color"}
-      style={{ background: color }}
+      style={{ color: color }}
       code={code}
       icon={icon}
       onKey={activatePicker}
