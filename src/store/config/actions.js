@@ -9,10 +9,14 @@ export const types = makeEnum([
   "mirror",
   "size",
   "rotationalSymmetry",
-  "nextSymmetry"
+  "nextSymmetry",
+  "background"
 ]);
 
-// TODO: pen size
+
+export function setBackgroundColor(color) {
+  return { type: types.background, payload: color };
+}
 
 export function setMode(mode) {
   return { type: types.mode, payload: mode };

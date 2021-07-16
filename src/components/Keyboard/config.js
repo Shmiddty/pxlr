@@ -8,11 +8,19 @@ import Mirror from './Mirror';
 import RotationalSymmetry from './RotationalSymmetry';
 import CanvasSize from './CanvasSize';
 import BrushSize from './BrushSize';
+import BackgroundColor from './BackgroundColor';
 import { Modes, Shapes } from '../../const/brush';
 import { Tools } from '../../const/tools';
 import { Toggles } from '../../const/toggles';
 
 export default [
+  { 
+    component: BackgroundColor,
+    props: {
+      code: "Backquote",
+      icon: "image"
+    }
+  },
   ...[].map.call('1234567890', (d, i) => ({
     component: PaletteItem,
     props: {

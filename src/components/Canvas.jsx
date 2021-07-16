@@ -173,13 +173,13 @@ export class Canvas extends Component {
     can.removeEventListener("pointerup", this.handlePointerUp);
     can.removeEventListener("pointerleave", this.handlePointerLeave);
   }
-  componentDidUpdate({ size, pxls, width, mode, brush, mirror }) {
+  componentDidUpdate({ size, pxls, width, mode, brush, mirror, background }) {
     if (width !== this.props.width || pxls !== this.props.pxls) {
       cancelAnimationFrame(this.af);
       this.af = requestAnimationFrame(() => this.paintPxls());
     }
     
-    if (width !== this.props.width) {
+    if (width !== this.props.width || background !== this.props.background) {
       cancelAnimationFrame(this.baf);
       this.baf = requestAnimationFrame(() => this.paintBg());
     }
@@ -264,13 +264,14 @@ export class Canvas extends Component {
   }
 
   paintBg() {
-    const { width, height } = this.props;
+    const { width, height, background } = this.props;
     const ctx = this._bgCtx;
 
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "#7777";
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#7771";
+    for (let y = 0; y < width; y++) {
+      for (let x = 0; x < height; x++) {
         if ((x % 2) + (y % 2) === 1) { 
           ctx.fillRect(x, y, 1, 1);
         }

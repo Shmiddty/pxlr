@@ -8,11 +8,17 @@ const initialState = {
   brush: Shapes.square,
   mirror: MIRROR.NONE,
   rotationalSymmetry: false,
-  size: 1
+  size: 1,
+  background: "#3b3b3b"
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
+    case types.background:
+      return {
+        ...state,
+        background: action.payload
+      };
     case types.mirror:
       return {
         ...state,
