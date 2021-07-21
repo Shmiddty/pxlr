@@ -46,7 +46,7 @@ export function toggleMirror(name) {
   }
 }
 
-export function setRotationalSymmetry(degrees) {
+export function setSymmetry(degrees) {
   return { type: types.rotationalSymmetry, payload: degrees };
 }
 

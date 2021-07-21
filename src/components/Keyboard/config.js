@@ -84,7 +84,7 @@ export default [
     props: {
       code: 'Tab',
       options: shapes.map(s => (
-        { shape: Shapes[s], icon: snek(s), label: srs(s) }
+        { value: Shapes[s], icon: snek(s), label: srs(s) }
       ))
     }
   },
@@ -93,7 +93,10 @@ export default [
     props: {
       code: 'KeyC',
       icon: 'rotate-right',
-      options: [0, 30, 45, 60, 90, 120, 180]
+      options: [0, 30, 45, 60, 90, 120, 180].map(value => ({
+        value,
+        label: value
+      }))
     }
   },
   {

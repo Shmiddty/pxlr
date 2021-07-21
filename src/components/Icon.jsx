@@ -1,6 +1,14 @@
 import React from 'react';
 import cn from '../util/classnames';
 
+export const WrappedIcon = ({ icon }) => (
+  typeof icon === "string"
+    ? <Icon name={icon} />
+    : typeof icon === "object"
+    ? <Icon {...icon} /> // TODO: safety dance
+    : false
+);
+
 export default function Icon({ 
   name, 
   rotate = 0, 
