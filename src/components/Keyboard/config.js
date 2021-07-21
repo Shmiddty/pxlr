@@ -90,7 +90,7 @@ export default [
   {
     component: RotationalSymmetry,
     props: {
-      code: 'KeyN',
+      code: 'KeyC',
       icon: 'rotate-right',
       options: [0, 30, 45, 60, 90, 120, 180]
     }
