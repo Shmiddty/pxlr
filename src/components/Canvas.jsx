@@ -295,7 +295,7 @@ export class Canvas extends Component {
   }
 
   paintCursor(clearAll) {
-    const { width, size, mode } = this.props;
+    const { width, size, mode, getPxls } = this.props;
     const ctx = this._cursorCtx;
     const rat = this._width / width;
     const showReticule = [Modes.bucket, Modes.dropper].includes(mode);
@@ -341,8 +341,12 @@ export class Canvas extends Component {
         ctx.fillRect(px + 2, py, 3, 1);
         ctx.fillRect(px, py + 2, 1, 3);
       } else {
-        getBrushPositions(pos, this.props).forEach(([x,y]) => {
-          ctx.fillRect(x, y, 1, 1);
+        Object.entries(getPxls(pos, this.props)).forEach(([pos, color]) => {
+          const [x,y] = pos.split(',').map(Number);
+          if (color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 1, 1);
+          }
         });
       }
       const modeIcon = this.mode.current;
@@ -366,6 +370,7 @@ export class Canvas extends Component {
       case Modes.darken: modeIcon = 'brightness-6 mdi-flip-h'; break;
       case Modes.lighten: modeIcon = 'brightness-6'; break;
       case Modes.dropper: modeIcon = 'eyedropper'; break;
+      case Modes.mix: modeIcon = 'bowl-mix'; break;
       default: break;
     }
     return (
@@ -422,7 +427,10 @@ export default connect(
             if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
             break;
           case Modes.lighten:
-              if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
+            if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
+            break;
+          case Modes.mix:
+            if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color), 0.44).hex();
             break;
           default: break;
         }
@@ -467,6 +475,13 @@ export default connect(
           return dispatch(
             setPxls(positions.reduce((o, p) => {
               if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
+              return o;
+            }, {}))
+          );
+        case Modes.mix:
+          return dispatch(
+            setPxls(positions.reduce((o, p) => {
+              if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color)).hex();
               return o;
             }, {}))
           );

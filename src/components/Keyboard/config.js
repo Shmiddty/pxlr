@@ -34,7 +34,8 @@ export default [
     'KeyE': { mode: Modes.eraser, icon: 'eraser-variant' },
     'KeyA': { mode: Modes.darken, icon: {name:'brightness-6', flipH:true} },
     'KeyS': { mode: Modes.lighten, icon: 'brightness-6' },
-    'KeyD': { mode: Modes.dropper, icon: 'eyedropper' }
+    'KeyD': { mode: Modes.dropper, icon: 'eyedropper' },
+    'KeyX': { mode: Modes.mix, icon: 'bowl-mix' }
   }, ({ mode, icon }, code, i) => ({
     component: BrushMode,
     props: {
@@ -64,8 +65,8 @@ export default [
     }
   })),
   ...mr({
-    'KeyZ': { toggle: Toggles.mirrorVertically, icon: 'reflect-vertical' },
-    'KeyX': { toggle: Toggles.mirrorHorizontally, icon: 'reflect-horizontal' }
+    'KeyV': { toggle: Toggles.mirrorVertically, icon: 'reflect-vertical' },
+    'KeyB': { toggle: Toggles.mirrorHorizontally, icon: 'reflect-horizontal' }
   }, ({ toggle, icon }, code, i) => ({
     component: Mirror,
     props: {
@@ -88,7 +89,7 @@ export default [
   {
     component: RotationalSymmetry,
     props: {
-      code: 'KeyC',
+      code: 'KeyN',
       icon: 'rotate-right',
       options: [0, 30, 45, 60, 90, 120, 180]
     }
