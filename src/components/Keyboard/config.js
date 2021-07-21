@@ -35,6 +35,7 @@ export default [
     'KeyA': { mode: Modes.darken, icon: {name:'brightness-6', flipH:true} },
     'KeyS': { mode: Modes.lighten, icon: 'brightness-6' },
     'KeyD': { mode: Modes.dropper, icon: 'eyedropper' },
+    'KeyZ': { mode: Modes.invert, icon: 'invert-colors' },
     'KeyX': { mode: Modes.mix, icon: 'bowl-mix' }
   }, ({ mode, icon }, code, i) => ({
     component: BrushMode,
