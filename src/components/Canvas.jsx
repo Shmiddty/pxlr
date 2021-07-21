@@ -9,6 +9,7 @@ import { Modes, Shapes } from '../const/brush';
 import { 
   circle, 
   rect, 
+  polygon,
   flip,
   subtract, 
   mapToPoints, 
@@ -93,6 +94,7 @@ function getBrushPositions (position, {
   const bruhhh = [];
   const [x, y] = position;
   const center = [Math.floor(x + size / 2 + 1/2), Math.floor(y + size / 2 + 1/2)];
+  const strokeWidth = 2;
 
   switch (brush) {
     case Shapes.square:
@@ -101,11 +103,23 @@ function getBrushPositions (position, {
     case Shapes.circle:
       bruhhh.push(...circle(center, size));
       break;
+    case Shapes.triangle:
+      bruhhh.push(...polygon(center, size, 3));
+      break;
+    case Shapes.pentagon:
+      bruhhh.push(...polygon(center, size, 5));
+      break;
+    case Shapes.hexagon:
+      bruhhh.push(...polygon(center, size, 6));
+      break;
+    case Shapes.octagon:
+      bruhhh.push(...polygon(center, size, 8));
+      break;
     case Shapes.squareOutline:
       bruhhh.push(...mapToPoints(
         subtract(
           pointsToMap(rect(center, size)),
-          pointsToMap(rect(center, Math.max(0, size - 2)))
+          pointsToMap(rect(center, Math.max(0, size - strokeWidth)))
         )
       ));
       break;
@@ -113,10 +127,43 @@ function getBrushPositions (position, {
       bruhhh.push(...mapToPoints(
         subtract(
           pointsToMap(circle(center, size)),
-          pointsToMap(circle(center, Math.max(0, size - 2)))
+          pointsToMap(circle(center, Math.max(0, size - strokeWidth)))
         )
       ));
       break;
+    case Shapes.triangleOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 3)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 3))
+        )
+      ));
+      break;
+    case Shapes.pentagonOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 5)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 5))
+        )
+      ));
+      break;
+    case Shapes.hexagonOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 6)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 6))
+        )
+      ));
+      break;
+    case Shapes.octagonOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 8)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 8))
+        )
+      ));
+      break;
+
     default: break;
   }
 

@@ -16,8 +16,12 @@ export const Modes = makeEnum(modes);
 export const shapes = [
   'square',
   'circle',
-  'squareOutline',
-  'circleOutline'
+  'triangle',
+  'pentagon',
+  'hexagon',
+  'octagon'
 ];
+
+shapes.push(...shapes.map(s => s + 'Outline'));
 
 export const Shapes = makeEnum(shapes);

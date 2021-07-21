@@ -28,8 +28,26 @@ export function circle([cx, cy], diameter) {
   return out;
 }
 
-export function polygon([cx, cy], radius, n) {
-  // TODO
+// TODO: figger it out 2head
+export function polygon([cx, cy], diameter, n) {
+  const out = [], radius = diameter / 2, d = 2 * Math.PI / n;
+  const h = radius * Math.cos(d / 2);
+
+  for (let y = 0; y < diameter; y++) {
+    for (let x = 0; x < diameter; x++) {
+      const px = x - radius + 1/2
+        , py = y - radius + 1/2;
+      const theta = Math.abs(
+        (5/2 * Math.PI + Math.atan2(py, px)) % d - d / 2
+      );
+      const R = h / Math.cos(theta);
+      if (px**2 + py**2 < R**2) out.push([
+        Math.floor(cx - radius + x), 
+        Math.floor(cy - radius + y)
+      ]);
+    }
+  }
+  return out;
 }
 
 export function add(a, b) {

@@ -1,4 +1,5 @@
 import mr from '../../util/mapReduce';
+import snek, { srs } from '../../util/snek';
 
 import PaletteItem from './PaletteItem';
 import Tool from './Tool';
@@ -9,7 +10,7 @@ import RotationalSymmetry from './RotationalSymmetry';
 import CanvasSize from './CanvasSize';
 import BrushSize from './BrushSize';
 import BackgroundColor from './BackgroundColor';
-import { Modes, Shapes } from '../../const/brush';
+import { Modes, Shapes, shapes } from '../../const/brush';
 import { Tools } from '../../const/tools';
 import { Toggles } from '../../const/toggles';
 
@@ -49,20 +50,21 @@ export default [
   ...mr({
     'KeyF': { tool: Tools.flipVertically, icon: 'flip-vertical' },
     'KeyG': { tool: Tools.flipHorizontally,  icon: 'flip-horizontal'},
-    'Minus': { tool: Tools.previousColor, icon: 'arrow-left-bold' },
-    'Equal': { tool: Tools.nextColor,icon: 'arrow-right-bold'},
+    'Minus': { tool: Tools.previousColor, icon: 'arrow-left-bold', className: "PreviousColor" },
+    'Equal': { tool: Tools.nextColor,icon: 'arrow-right-bold', className: "NextColor" },
     'KeyR': { tool: Tools.rotateCounterClockwise, icon: 'format-rotate-90'},
     'KeyT': { tool: Tools.rotateClockwise, icon: { name: 'format-rotate-90', flipH: true } },
     'Backspace': { tool: Tools.clear, icon: 'trash-can'},
     'KeyU': { tool: Tools.undo, icon: 'undo'},
     'KeyI': { tool: Tools.redo, icon: 'redo'},
-  }, ({ tool, icon }, code, i) => ({
+  }, ({ tool, icon, ...rest }, code, i) => ({
     component: Tool,
     props: {
       tool,
       code,
       icon,
-      name: Tools[tool]
+      name: srs(Tools[tool]),
+      ...rest
     }
   })),
   ...mr({
@@ -74,25 +76,22 @@ export default [
       uid: toggle,
       code,
       icon,
-      name: Toggles[toggle]
+      name: srs(Toggles[toggle])
     }
   })),
   {
     component: BrushShape,
     props: {
       code: 'Tab',
-      options: [
-        { shape: Shapes.square, icon: 'square', label: 'Square' },
-        { shape: Shapes.circle, icon: 'circle', label: 'Circle' },
-        { shape: Shapes.squareOutline, icon: 'square-outline', label: 'Square Outline' },
-        { shape: Shapes.circleOutline, icon: 'circle-outline', label: 'Circle Outline' }
-      ]
+      options: shapes.map(s => (
+        { shape: Shapes[s], icon: snek(s), label: srs(s) }
+      ))
     }
   },
   {
     component: RotationalSymmetry,
     props: {
-      code: 'KeyN',
+      code: 'KeyC',
       icon: 'rotate-right',
       options: [0, 30, 45, 60, 90, 120, 180]
     }
@@ -110,12 +109,12 @@ export default [
       },
       decreaseProps: {
         code: 'BracketLeft',
-        label: '',
+        label: 'Smaller Image',
         icon: 'image-size-select-small'
       },
       increaseProps: {
         code: 'BracketRight',
-        label: '',
+        label: 'Bigger Image',
         icon: 'image-size-select-large'
       }
     }
@@ -129,16 +128,16 @@ export default [
         label: '',
         min: 1,
         step: 1,
-        max: 64
+        max: 128
       },
       decreaseProps: {
         code: 'Semicolon',
-        label: '',
+        label: 'Smaller Brush',
         icon: 'minus-thick'
       },
       increaseProps: {
         code: 'Quote',
-        label: '',
+        label: 'Bigger Brush',
         icon: 'plus-thick'
       }
     }
