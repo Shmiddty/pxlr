@@ -1,6 +1,6 @@
 import makeEnum from '../util/makeEnum';
 
-export const Modes = makeEnum([
+export const modes = [
   'pencil',
   'eraser',
   'darken',
@@ -9,9 +9,15 @@ export const Modes = makeEnum([
   'mix',
   'bucket',
   'dropper'
-]);
+];
 
-export const Shapes = makeEnum([
+export const Modes = makeEnum(modes);
+
+export const shapes = [
+  'square',
   'circle',
-  'square'
-]);
+  'squareOutline',
+  'circleOutline'
+];
+
+export const Shapes = makeEnum(shapes);

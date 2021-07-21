@@ -1,11 +1,11 @@
 import { MIRROR, symmetries } from './tools';
-import { Modes, Shapes } from '../../const/brush';
+import { Modes, Shapes, shapes } from '../../const/brush';
 import { Tools } from '../../const/tools';
 import { types } from './actions';
 
 const initialState = {
   mode: Modes.pencil,
-  brush: Shapes.square,
+  brush: Shapes.square, // TODO: this should be shape, not brush, maybe.
   mirror: MIRROR.NONE,
   rotationalSymmetry: false,
   size: 1,
@@ -37,9 +37,10 @@ export default function (state = initialState, action) {
     case types.nextBrush:
       return {
         ...state,
-        brush: state.brush === Shapes.square
-          ? Shapes.circle
-          : Shapes.square
+        brush: Shapes[shapes[
+          (1 + shapes.indexOf(Shapes[state.brush])) %
+          shapes.length
+        ]]
       };
     case types.size:
       return {

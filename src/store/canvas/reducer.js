@@ -1,7 +1,7 @@
 import { types as canvasTypes } from './actions';
 import { types as configTypes } from '../config/actions';
 import { Tools } from '../../const/tools';
-import { fill, flip, rotate } from '../../lib/pxls';
+import { fill, flip, rotate90 as rotate } from '../../lib/pxls';
 
 // TODO: it is said that computations shouldn't be performed in reducers...
 

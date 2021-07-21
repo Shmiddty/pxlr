@@ -82,8 +82,10 @@ export default [
     props: {
       code: 'Tab',
       options: [
-        { shape: Shapes.square, icon: 'square-outline', label: 'Square' },
-        { shape: Shapes.circle, icon: 'circle-outline', label: 'Circle' }
+        { shape: Shapes.square, icon: 'square', label: 'Square' },
+        { shape: Shapes.circle, icon: 'circle', label: 'Circle' },
+        { shape: Shapes.squareOutline, icon: 'square-outline', label: 'Square Outline' },
+        { shape: Shapes.circleOutline, icon: 'circle-outline', label: 'Circle Outline' }
       ]
     }
   },

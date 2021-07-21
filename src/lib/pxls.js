@@ -1,5 +1,47 @@
 import { bfs } from '../util/search';
 
+export function rect([cx, cy], height, width = height) {
+  const out = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      out.push([
+        Math.floor(cx - width / 2 + x),
+        Math.floor(cy - height / 2 + y)
+      ]);
+    }
+  }
+  return out;
+}
+
+export function circle([cx, cy], diameter) {
+  const out = [], radius = diameter / 2;
+  for (let y = 0; y < diameter; y++) {
+    for (let x = 0; x < diameter; x++) {
+      const px = x - radius + 1/2
+        , py = y - radius + 1/2;
+      if (px**2 + py**2 < radius**2) out.push([
+        Math.floor(cx - radius + x), 
+        Math.floor(cy - radius + y)
+      ]);
+    }
+  }
+  return out;
+}
+
+export function polygon([cx, cy], radius, n) {
+  // TODO
+}
+
+export function add(a, b) {
+  return Object.assign({}, a, b);
+}
+
+export function subtract(a, b) {
+  const copy = Object.assign({}, a);
+  Object.keys(b).forEach(k => delete copy[k]);
+  return copy;
+}
+
 export function keyToPoint(key) {
   return key.split(',').map(Number);
 }
@@ -54,7 +96,7 @@ export function colorMapToPxls(colorMap) {
  * clockwise - <true>
  * dimensions - [width, height]
  */
-export function rotate(pxls, cw = true, [width, height]) {
+export function rotate90(pxls, cw = true, [width, height]) {
   return Object.entries(pxls).reduce((o, [key, val]) => {
       let [x,y] = key.split(',').map(Number);
       let pos = cw

@@ -6,6 +6,14 @@ import { setColor, setPaletteIndex } from '../store/palette/actions';
 import { setPxls, bucket } from '../store/canvas/actions';
 import { MIRROR } from '../store/config/tools';
 import { Modes, Shapes } from '../const/brush';
+import { 
+  circle, 
+  rect, 
+  flip,
+  subtract, 
+  mapToPoints, 
+  pointsToMap 
+} from '../lib/pxls';
 import "./Canvas.css";
 import Icon from './Icon';
 
@@ -82,27 +90,50 @@ function getBrushPositions (position, {
   rotationalSymmetry: rs
 }) {
   if ([Modes.bucket, Modes.dropper].includes(mode)) return [position];
-  
-  let [px, py] = position;
-  let positions = [];
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      let [x, y] = [px + j, py + i];
-      let r = size / 2;
-      let a = j - size / 2 + 1/2, b = i - size / 2 + 1/2;
-      if (
-        brush === Shapes.square || 
-        (brush === Shapes.circle && magSqr([a, b]) < r**2)
-      ) {
-        positions.push(...[
-          [x, y], 
-          mirror & MIRROR.VERTICAL && [x, height - y - 1],
-          mirror & MIRROR.HORIZONTAL && [width - x - 1, y],
-          mirror === MIRROR.BOTH && [width - x - 1, height - y - 1]
-        ].filter(Boolean));
-      }
-    }
+  const bruhhh = [];
+  const [x, y] = position;
+  const center = [Math.floor(x + size / 2 + 1/2), Math.floor(y + size / 2 + 1/2)];
+
+  switch (brush) {
+    case Shapes.square:
+      bruhhh.push(...rect(center, size));
+      break;
+    case Shapes.circle:
+      bruhhh.push(...circle(center, size));
+      break;
+    case Shapes.squareOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(rect(center, size)),
+          pointsToMap(rect(center, Math.max(0, size - 2)))
+        )
+      ));
+      break;
+    case Shapes.circleOutline:
+      bruhhh.push(...mapToPoints(
+        subtract(
+          pointsToMap(circle(center, size)),
+          pointsToMap(circle(center, Math.max(0, size - 2)))
+        )
+      ));
+      break;
+    default: break;
   }
+
+
+  // TODO: this is less efficient, but more elegant. hmmmm
+  const bMap = pointsToMap(bruhhh);
+  const positions = [...bruhhh]
+  if (mirror & MIRROR.VERTICAL) positions.push(...mapToPoints(
+    flip(bMap, true, [width, height])
+  )); 
+  if (mirror & MIRROR.HORIZONTAL) positions.push(...mapToPoints(
+    flip(bMap, false, [width, height])
+  ));
+  if (mirror === MIRROR.BOTH) positions.push(...mapToPoints(
+    flip(flip(bMap, true, [width, height]), false, [width, height])
+  ));
+
 
   if (rs) {
     const rots = [], cx = width / 2 - 1/2, cy = height / 2 - 1/2;
