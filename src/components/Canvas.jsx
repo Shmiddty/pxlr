@@ -20,10 +20,6 @@ import Icon from './Icon';
 
 const modeIconSize = 32;
 
-function magSqr([x,y]) {
-  return x**2 + y**2;
-}
-
 // adapted from matter-js
 function rotateVector([vx, vy], angle, [px, py] = [0, 0]) {
   const cos = Math.cos(angle), sin = Math.sin(angle);
@@ -81,6 +77,73 @@ function interpolate(points, threshold = 0.5) {
   }, []);
 }
 
+function getBrush(position, { size, shape, mode }) {
+  if ([Modes.bucket, Modes.dropper].includes(mode)) return [position];
+  const [x, y] = position;
+  const center = [Math.floor(x + size / 2 + 1/2), Math.floor(y + size / 2 + 1/2)];
+  const strokeWidth = 2;
+
+  switch (shape) {
+    case Shapes.square:
+      return rect(center, size);
+    case Shapes.circle:
+      return circle(center, size);
+    case Shapes.triangle:
+      return polygon(center, size, 3);
+    case Shapes.pentagon:
+      return polygon(center, size, 5);
+    case Shapes.hexagon:
+      return polygon(center, size, 6);
+    case Shapes.octagon:
+      return polygon(center, size, 8);
+    case Shapes.squareOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(rect(center, size)),
+          pointsToMap(rect(center, Math.max(0, size - strokeWidth)))
+        )
+      );
+    case Shapes.circleOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(circle(center, size)),
+          pointsToMap(circle(center, Math.max(0, size - strokeWidth)))
+        )
+      );
+    case Shapes.triangleOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 3)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 3))
+        )
+      );
+    case Shapes.pentagonOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 5)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 5))
+        )
+      );
+    case Shapes.hexagonOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 6)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 6))
+        )
+      );
+    case Shapes.octagonOutline:
+      return mapToPoints(
+        subtract(
+          pointsToMap(polygon(center, size, 8)),
+          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 8))
+        )
+      );
+
+    default: return [position];
+  }
+
+}
+
 function getBrushPositions (position, { 
   mode, 
   brush, 
@@ -90,84 +153,8 @@ function getBrushPositions (position, {
   height,
   rotationalSymmetry: rs
 }) {
-  if ([Modes.bucket, Modes.dropper].includes(mode)) return [position];
-  const bruhhh = [];
-  const [x, y] = position;
-  const center = [Math.floor(x + size / 2 + 1/2), Math.floor(y + size / 2 + 1/2)];
-  const strokeWidth = 2;
-
-  switch (brush) {
-    case Shapes.square:
-      bruhhh.push(...rect(center, size));
-      break;
-    case Shapes.circle:
-      bruhhh.push(...circle(center, size));
-      break;
-    case Shapes.triangle:
-      bruhhh.push(...polygon(center, size, 3));
-      break;
-    case Shapes.pentagon:
-      bruhhh.push(...polygon(center, size, 5));
-      break;
-    case Shapes.hexagon:
-      bruhhh.push(...polygon(center, size, 6));
-      break;
-    case Shapes.octagon:
-      bruhhh.push(...polygon(center, size, 8));
-      break;
-    case Shapes.squareOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(rect(center, size)),
-          pointsToMap(rect(center, Math.max(0, size - strokeWidth)))
-        )
-      ));
-      break;
-    case Shapes.circleOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(circle(center, size)),
-          pointsToMap(circle(center, Math.max(0, size - strokeWidth)))
-        )
-      ));
-      break;
-    case Shapes.triangleOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(polygon(center, size, 3)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 3))
-        )
-      ));
-      break;
-    case Shapes.pentagonOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(polygon(center, size, 5)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 5))
-        )
-      ));
-      break;
-    case Shapes.hexagonOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(polygon(center, size, 6)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 6))
-        )
-      ));
-      break;
-    case Shapes.octagonOutline:
-      bruhhh.push(...mapToPoints(
-        subtract(
-          pointsToMap(polygon(center, size, 8)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 8))
-        )
-      ));
-      break;
-
-    default: break;
-  }
-
-
+  const bruhhh = getBrush(position, { mode, size, shape: brush });
+  
   // TODO: this is less efficient, but more elegant. hmmmm
   const bMap = pointsToMap(bruhhh);
   const positions = [...bruhhh]
@@ -180,8 +167,7 @@ function getBrushPositions (position, {
   if (mirror === MIRROR.BOTH) positions.push(...mapToPoints(
     flip(flip(bMap, true, [width, height]), false, [width, height])
   ));
-
-
+ 
   if (rs) {
     const rots = [], cx = width / 2 - 1/2, cy = height / 2 - 1/2;
     for (let theta = rs; theta < 360; theta += rs) {
@@ -198,6 +184,38 @@ function getBrushPositions (position, {
   }
 
   return positions;
+}
+
+function applyBrush(position, props) {
+  const { 
+    mode,
+    color, 
+    pxls
+  } = props;
+  return getBrushPositions(position, props).reduce((o, p) => {
+    switch (mode) {
+      case Modes.pencil:
+        o[p] = color;
+        break;
+      case Modes.eraser:
+        o[p] = null;
+        break;
+      case Modes.darken:
+        if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
+        break;
+      case Modes.lighten:
+        if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
+        break;
+      case Modes.invert:
+        if (pxls[p]) o[p] = Color(pxls[p]).negate().hex();
+        break;
+      case Modes.mix:
+        if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color), 0.44).hex();
+        break;
+      default: break;
+    }
+    return o;
+  }, {});
 }
 
 export class Canvas extends Component {
@@ -279,15 +297,17 @@ export class Canvas extends Component {
     if (!this._down) return; // click outside of canvas
 
     this.dbPointerUp.cancel();
-    
-    if (this._moved) {
-      this.props.updatePxls(this.pxlCache, this.props);
+   
+    if (!this._moved || this.props.mode === Modes.dropper) {
+      this.props.pxlClicked(
+        this.pointerToPos([e.offsetX, e.offsetY]), 
+        this.props
+      ); 
     }
     else {
-      this.apply([e.offsetX, e.offsetY], false); // already a nativeEvent
+      this.update();
     }
 
-    this.pxlCache = {};
     this._moved = this._down = false;
   }
   handlePointerUpdate (e) {
@@ -321,25 +341,23 @@ export class Canvas extends Component {
     ];
   }
 
+  update () {
+    this.props.updatePxls(this.pxlCache, this.props);
+    this.pxlCache = {};
+  }
+  
   apply (pointer, multi = false) {
-    const { 
-      pixelClicked, 
-      getPxls
-    } = this.props;
     const pos = this.pointerToPos(pointer);
-
-    if (multi) {
-      const newPxls = getPxls(pos, this.props);
-      this.pxlCache = Object.assign(
-        {}, 
-        this.pxlCache, 
-        newPxls
-      );
-      cancelAnimationFrame(this.paf);
-      this.paf = requestAnimationFrame(() => this.paintPxls(this.pxlCache));
-    } else {
-      pixelClicked(pos, this.props);
-    }
+    const newPxls = applyBrush(pos, this.props);
+    
+    this.pxlCache = Object.assign(
+      {}, 
+      this.pxlCache, 
+      newPxls
+    );
+    
+    cancelAnimationFrame(this.paf);
+    this.paf = requestAnimationFrame(() => this.paintPxls(this.pxlCache));
   }
   getPxls() {
     return Object.assign({}, this.props.pxls, this.pxlCache)
@@ -381,7 +399,6 @@ export class Canvas extends Component {
       width, 
       size, 
       mode, 
-      getPxls, 
       background, 
       backgroundHatch 
     } = this.props;
@@ -430,7 +447,7 @@ export class Canvas extends Component {
         ctx.fillRect(px + 2, py, 3, 1);
         ctx.fillRect(px, py + 2, 1, 3);
       } else {
-        Object.entries(getPxls(pos, this.props)).forEach(([pos, color]) => {
+        Object.entries(applyBrush(pos, this.props)).forEach(([pos, color]) => {
           const [x,y] = pos.split(',').map(Number);
           if (color) ctx.fillStyle = color;
           else if (mode === Modes.eraser) {
@@ -506,93 +523,23 @@ export default connect(
     color: state.palette.palette[state.palette.paletteIndex]
   }),
   dispatch => ({
-    getPxls: function(position, props) {
-      const { 
-        mode,
-        color, 
-        pxls
-      } = props;
-      return getBrushPositions(position, props).reduce((o, p) => {
-        switch (mode) {
-          case Modes.pencil:
-            o[p] = color;
-            break;
-          case Modes.eraser:
-            o[p] = null;
-            break;
-          case Modes.darken:
-            if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
-            break;
-          case Modes.lighten:
-            if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
-            break;
-          case Modes.invert:
-            if (pxls[p]) o[p] = Color(pxls[p]).negate().hex();
-            break;
-          case Modes.mix:
-            if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color), 0.44).hex();
-            break;
-          default: break;
-        }
-        return o;
-      }, {});
-    },
-    // TODO: could probably mostly do away with this
-    pixelClicked: function(position, props) { 
+    pxlClicked: function(position, props) { 
       const {
         mode,
         color, 
         palette,
         pxls
       } = props;
-      let positions = getBrushPositions(position, props);
       
       switch (mode) {
         case Modes.pencil:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              o[p] = color;
-              return o;
-            }, {}))
-          );
-        case Modes.bucket:
-          return dispatch(bucket(position, color));
         case Modes.eraser:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              o[p] = null;
-              return o;
-            }, {}))
-          );
         case Modes.darken:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
-              return o;
-            }, {}))
-          );
         case Modes.lighten:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
-              return o;
-            }, {}))
-          );
         case Modes.invert:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              if (pxls[p]) o[p] = Color(pxls[p]).negate().hex();
-              return o;
-            }, {}))
-          );
-
         case Modes.mix:
-          return dispatch(
-            setPxls(positions.reduce((o, p) => {
-              if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color)).hex();
-              return o;
-            }, {}))
-          );
+          return dispatch(setPxls(applyBrush(position, props)));
+
         case Modes.dropper:
           if (pxls[position]) {
             // Switch to the color already in the palette
@@ -604,11 +551,13 @@ export default connect(
             return dispatch(setColor(pxls[position]));
           }
           break;
+        case Modes.bucket:
+          return dispatch(bucket(position, color));
+
         default: break;
       }
     },
-    updatePxls: function(pxls, { mode }) {
-      if (mode === Modes.bucket || mode === Modes.dropper) return;
+    updatePxls: function(pxls) {
       dispatch(setPxls(pxls));
     }
   })
