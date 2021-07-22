@@ -1,12 +1,12 @@
-import { MIRROR, symmetries } from './tools';
-import { Modes, Shapes, shapes } from '../../const/brush';
+import { symmetries } from './tools';
+import { Mirror, Modes, Shapes, shapes } from '../../const/brush';
 import { Tools } from '../../const/tools';
 import { types } from './actions';
 
 const initialState = {
   mode: Modes.pencil,
   brush: Shapes.square, // TODO: this should be shape, not brush, maybe.
-  mirror: MIRROR.NONE,
+  mirror: Mirror.none,
   rotationalSymmetry: false,
   size: 1,
   background: "#3b3b3b"

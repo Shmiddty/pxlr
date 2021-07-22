@@ -1,5 +1,5 @@
 import makeEnum from '../../util/makeEnum';
-import { MIRROR } from './tools';
+import { Mirror } from '../../const/brush';
 
 export const types = makeEnum([
   "mode",
@@ -40,8 +40,8 @@ export function setMirror(mirror) {
 
 export function toggleMirror(name) {
   switch (name) {
-    case "mirror-vertically": return setMirror(MIRROR.VERTICAL);
-    case "mirror-horizontally": return setMirror(MIRROR.HORIZONTAL);
+    case "mirror-vertically": return setMirror(Mirror.vertical);
+    case "mirror-horizontally": return setMirror(Mirror.horizontal);
     default: break;
   }
 }
