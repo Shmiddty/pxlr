@@ -9,8 +9,6 @@ import { getBrushPositions } from '../lib/brush';
 import "./Canvas.css";
 import Icon from './Icon';
 
-const modeIconSize = 32;
-
 function applyBrush(position, props) {
   const { 
     mode,
@@ -45,7 +43,7 @@ function applyBrush(position, props) {
 
 export class Canvas extends Component {
   static defaultProps = {
-    backgroundHatch: '#7773'
+    backgroundHatching: '#777'
   }
   
   constructor (props) {
@@ -189,12 +187,12 @@ export class Canvas extends Component {
   }
 
   paintBg() {
-    const { width, height, background, backgroundHatch } = this.props;
+    const { width, height, background, backgroundHatching } = this.props;
     const ctx = this._bgCtx;
 
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = backgroundHatch;
+    ctx.fillStyle = Color(backgroundHatching).alpha(.25);
     for (let y = 0; y < width; y++) {
       for (let x = 0; x < height; x++) {
         if ((x % 2) + (y % 2) === 1) { 
@@ -225,18 +223,17 @@ export class Canvas extends Component {
       size, 
       mode, 
       background, 
-      backgroundHatch 
+      backgroundHatching
     } = this.props;
+    const bg = Color(backgroundHatching);
     const ctx = this._cursorCtx;
     const rat = this._width / width;
-    const showReticule = [Modes.bucket, Modes.dropper].includes(mode);
+    const brushPreview = ![Modes.bucket, Modes.dropper].includes(mode);
+    const s = brushPreview ? size * rat : rat;
 
     if (!clearAll && this._lastMouse) {
-      let pos = this.pointerToPos(this._lastMouse)
-      if (showReticule) {
-        let [px, py] = pos;
-        ctx.clearRect(px - 4, py - 4, 9, 9);
-      } else {
+      if (brushPreview) {
+        let pos = this.pointerToPos(this._lastMouse)
         getBrushPositions(pos, this.props)
           .forEach(([x,y]) => 
             ctx.clearRect(x, y, 1, 1)
@@ -250,40 +247,32 @@ export class Canvas extends Component {
       const pos = this.pointerToPos(this._mouse); 
       const [x, y] = pos.map(c => c * rat);
 
-      let s = showReticule
-        ? rat
-        : size * rat
-        ;
-      
-      if (showReticule) {
-        let [px, py] = pos;
-        ctx.fillStyle = "#777e";
-        ctx.fillRect(px, py, 1, 1);
-        ctx.fillStyle = "#fffe";
-        ctx.fillRect(px, py - 4, 1, 3);
-        ctx.fillRect(px - 4, py, 3 , 1);
-        ctx.fillStyle = "#000e";
-        ctx.fillRect(px + 2, py, 3, 1);
-        ctx.fillRect(px, py + 2, 1, 3);
-      } else {
-        Object.entries(applyBrush(pos, this.props)).forEach(([pos, color]) => {
-          const [x,y] = pos.split(',').map(Number);
-          if (color) ctx.fillStyle = color;
-          else if (mode === Modes.eraser) {
-            ctx.fillStyle = background;
-            if ((x % 2) + (y % 2) === 1) {
-              ctx.fillRect(x, y, 1, 1);
-              ctx.fillStyle = backgroundHatch;
+      if (brushPreview) {
+        Object.entries(applyBrush(pos, this.props))
+          .forEach(([pos, color]) => {
+            const [x,y] = pos.split(',').map(Number);
+            if (color) ctx.fillStyle = color;
+            else if (mode === Modes.eraser) {
+              ctx.fillStyle = background;
+              if ((x % 2) + (y % 2) === 1) {
+                ctx.fillRect(x, y, 1, 1);
+                ctx.fillStyle = bg.alpha(.25);
+              }
             }
-          }
-          else ctx.fillStyle = "#7777";
-          
-          ctx.fillRect(x, y, 1, 1);
+            else ctx.fillStyle = bg.alpha(.5);
+            
+            ctx.fillRect(x, y, 1, 1);
         });
       }
+      
+      // TODO: move this to its own component
       const modeIcon = this.mode.current;
-      modeIcon.className = Modes[mode];
-      modeIcon.style.transform = `translate(${x+s}px, ${y-modeIconSize}px)`;
+      const [mx, my] = [x,y];//this._mouse;
+      modeIcon.style.top = my + 'px';
+      modeIcon.style.left = mx + 'px';
+      modeIcon.style.width = s + 'px';
+      modeIcon.style.height = s + 'px';
+
       if (mode === Modes.dropper) {
         modeIcon.style.background = this.props.pxls[pos] || '';
       } else {
@@ -293,9 +282,9 @@ export class Canvas extends Component {
   }
 
   render () {
-    const { width, height } = this.props;
+    const { width, height, mode } = this.props;
     let modeIcon;
-    switch (this.props.mode) {
+    switch (mode) {
       case Modes.pencil: modeIcon = 'pencil';break;
       case Modes.bucket: modeIcon = 'format-color-fill'; break;
       case Modes.eraser: modeIcon = 'eraser-variant'; break;
@@ -326,7 +315,7 @@ export class Canvas extends Component {
           width={width}
           height={height}
         />
-        <span id="mode" ref={this.mode}>
+        <span id="mode" className={Modes[mode]}  ref={this.mode}>
           <Icon name={modeIcon} />
         </span>
       </div>
