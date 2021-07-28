@@ -21,7 +21,7 @@ export default function Carousel({
   onNext,
   select,
   selectedIndex = 0,
-  selectedItem = options[selectedIndex],
+  selectedItem = options[selectedIndex] || {},
   icon = selectedItem.icon,
   label = selectedItem.label,
   ...props 
