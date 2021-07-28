@@ -9,11 +9,13 @@ import {
   flip
 } from '../lib/pxls';
 
-export function getBrush(position, { size, shape, mode }) {
+
+const adj = N => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
+
+export function getBrush(position, { size, shape, mode, stroke }) {
   if ([Modes.bucket, Modes.dropper].includes(mode)) return [position];
   const [x, y] = position;
   const center = [Math.floor(x + size / 2 + 1/2), Math.floor(y + size / 2 + 1/2)];
-  const strokeWidth = 2;
 
   switch (shape) {
     case Shapes.square:
@@ -32,42 +34,42 @@ export function getBrush(position, { size, shape, mode }) {
       return mapToPoints(
         subtract(
           pointsToMap(rect(center, size)),
-          pointsToMap(rect(center, Math.max(0, size - strokeWidth)))
+          pointsToMap(rect(center, Math.max(0, size - stroke * 2)))
         )
       );
     case Shapes.circleOutline:
       return mapToPoints(
         subtract(
           pointsToMap(circle(center, size)),
-          pointsToMap(circle(center, Math.max(0, size - strokeWidth)))
+          pointsToMap(circle(center, Math.max(0, size - stroke * 2)))
         )
       );
     case Shapes.triangleOutline:
       return mapToPoints(
         subtract(
           pointsToMap(polygon(center, size, 3)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 3))
+          pointsToMap(polygon(center, Math.max(0, size - stroke * adj(3)), 3))
         )
       );
     case Shapes.pentagonOutline:
       return mapToPoints(
         subtract(
           pointsToMap(polygon(center, size, 5)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth - 2), 5))
+          pointsToMap(polygon(center, Math.max(0, size - stroke * adj(5)), 5))
         )
       );
     case Shapes.hexagonOutline:
       return mapToPoints(
         subtract(
           pointsToMap(polygon(center, size, 6)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 6))
+          pointsToMap(polygon(center, Math.max(0, size - stroke * adj(6)), 6))
         )
       );
     case Shapes.octagonOutline:
       return mapToPoints(
         subtract(
           pointsToMap(polygon(center, size, 8)),
-          pointsToMap(polygon(center, Math.max(0, size - strokeWidth), 8))
+          pointsToMap(polygon(center, Math.max(0, size - stroke * adj(8)), 8))
         )
       );
 
@@ -141,9 +143,10 @@ export function getBrushPositions (position, {
   mirror, 
   width, 
   height,
+  stroke,
   rotationalSymmetry: rs
 }) {
-  const bruhhh = getBrush(position, { mode, size, shape: brush });
+  const bruhhh = getBrush(position, { mode, size, shape: brush, stroke });
   
   // TODO: this is less efficient, but more elegant. hmmmm
   const bMap = pointsToMap(bruhhh);

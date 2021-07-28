@@ -9,6 +9,7 @@ import Mirror from './Mirror';
 import RotationalSymmetry from './RotationalSymmetry';
 import CanvasSize from './CanvasSize';
 import BrushSize from './BrushSize';
+import StrokeSize from './StrokeSize';
 import BackgroundColor from './BackgroundColor';
 import { Modes, Shapes, shapes } from '../../const/brush';
 import { Tools } from '../../const/tools';
@@ -136,14 +137,38 @@ export default [
       decreaseProps: {
         code: 'Semicolon',
         label: 'Smaller Brush',
-        icon: 'minus-thick'
+        icon: 'pencil-minus'
       },
       increaseProps: {
         code: 'Quote',
         label: 'Bigger Brush',
-        icon: 'plus-thick'
+        icon: 'pencil-plus'
+      }
+    }
+  },
+  {
+    component: StrokeSize,
+    props: {
+      code: ['Comma', 'Period', 'Slash'],
+      inputProps: {
+        code: 'Comma',
+        label: '',
+        min: 1,
+        step: 1,
+        max: 128
+      },
+      decreaseProps: {
+        code: 'Period',
+        label: 'Smaller Stroke',
+        icon: 'pencil-minus-outline'
+      },
+      increaseProps: {
+        code: 'Slash',
+        label: 'Bigger Stroke',
+        icon: 'pencil-plus-outline'
       }
     }
   }
+
 
 ];

@@ -77,6 +77,9 @@
 .keyboard .numeric.input {
   background: #555;
 }
+.keyboard .numeric[disabled] {
+  opacity: .5;
+}
 
 .keyboard .mode,
 .keyboard .toggle,

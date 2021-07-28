@@ -9,6 +9,7 @@ const initialState = {
   mirror: Mirror.none,
   rotationalSymmetry: false,
   size: 1,
+  stroke: 1,
   background: "#3b3b3b"
 };
 
@@ -46,6 +47,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         size: action.payload
+      };
+    case types.stroke:
+      return {
+        ...state,
+        stroke: action.payload
       };
     case types.rotationalSymmetry:
       return {

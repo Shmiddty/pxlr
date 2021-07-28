@@ -32,10 +32,12 @@ export default function Numeric({
       </Key>
       <Key
         className={cn('numeric', 'decrease')}
+        disabled={value === min}
         { ...decreaseProps }
       />
       <Key
         className={cn('numeric', 'increase')}
+        disabled={value === max}
         { ...increaseProps }
       />
     </Fragment>

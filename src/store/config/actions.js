@@ -8,6 +8,7 @@ export const types = makeEnum([
   "tool",
   "mirror",
   "size",
+  "stroke",
   "rotationalSymmetry",
   "nextSymmetry",
   "background"
@@ -60,4 +61,12 @@ export function setSize(size) {
 
 export function resetSize() {
   return { type: types.size, payload: 1 };
+}
+
+export function setStroke(size) {
+  return { type: types.stroke, payload: size };
+}
+
+export function resetStroke() {
+  return { type: types.stroke, payload: 1 };
 }
