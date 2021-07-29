@@ -149,8 +149,8 @@ export function getBrushPositions(
   function floorEm(vector) {
     return vector.map((v) => Math.floor(v));
   }
-
-  const pointer = add(position, [size / 2 - 1 / 2, size / 2 - 1 / 2]);
+  
+  const pointer = add(position, [size / 2 + 1/2, size / 2 + 1/2]);
   const brush = getBrush(size, shape, stroke).map(fAdd(pointer)).map(floorEm);
 
   const positions = [...brush];
@@ -167,17 +167,16 @@ export function getBrushPositions(
     );
 
   if (rs) {
-    // TODO: these are slightly off... Or maybe the anchor brush is off... 
-    const center = [width / 2 - 1 / 2, height / 2 - 1 / 2];
-    const pcVec = floorEm(subtract(center, pointer));
+    const center = [width / 2 + 1/2, height / 2 + 1/2];
+    const pcVec = subtract(center, pointer);
     const R = magnitude(pcVec);
     const a0 = angle(pcVec);
     for (let theta = rs; theta < 360; theta += rs) {
       const ang = (theta / 180) * Math.PI;
+      const delta = add(center, scale(unit(ang + a0), -R));
       positions.push(
         ...getBrush(size, shape, stroke, ang)
-          // TODO: something here is causing gaps
-          .map(fAdd(add(center, scale(unit(ang + a0), -R))))
+          .map(fAdd((delta)))
           .map(floorEm)
       );
     }
