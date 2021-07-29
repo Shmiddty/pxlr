@@ -1,19 +1,17 @@
+import memo from "../util/memo";
 import { bfs } from "../util/search";
 
-export function rect([cx, cy], height, width = height) {
+export const rect = memo((width, height = width) => {
   const out = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      out.push([
-        Math.floor(cx - width / 2 + x),
-        Math.floor(cy - height / 2 + y),
-      ]);
+      out.push([Math.floor(x - width / 2), Math.floor(y - height / 2)]);
     }
   }
   return out;
-}
+});
 
-export function circle([cx, cy], diameter) {
+export const circle = memo((diameter) => {
   const out = [],
     radius = diameter / 2;
   for (let y = 0; y < diameter; y++) {
@@ -21,14 +19,13 @@ export function circle([cx, cy], diameter) {
       const px = x - radius + 1 / 2,
         py = y - radius + 1 / 2;
       if (px ** 2 + py ** 2 < radius ** 2)
-        out.push([Math.floor(cx - radius + x), Math.floor(cy - radius + y)]);
+        out.push([Math.floor(x - radius), Math.floor(y - radius)]);
     }
   }
   return out;
-}
+});
 
-// TODO: figger it out 2head
-export function polygon([cx, cy], diameter, n) {
+export const polygon = memo((diameter, n) => {
   const out = [],
     radius = diameter / 2,
     d = (2 * Math.PI) / n;
@@ -43,11 +40,11 @@ export function polygon([cx, cy], diameter, n) {
       );
       const R = h / Math.cos(theta);
       if (px ** 2 + py ** 2 < R ** 2)
-        out.push([Math.floor(cx - radius + x), Math.floor(cy - radius + y)]);
+        out.push([Math.floor(x - radius), Math.floor(y - radius)]);
     }
   }
   return out;
-}
+});
 
 export function add(a, b) {
   return Object.assign({}, a, b);
@@ -57,6 +54,10 @@ export function subtract(a, b) {
   const copy = Object.assign({}, a);
   Object.keys(b).forEach((k) => delete copy[k]);
   return copy;
+}
+export function subtractPoints(a, b) {
+  const bMap = pointsToMap(b);
+  return a.filter((p) => !bMap[p]);
 }
 
 export function keyToPoint(key) {
@@ -69,6 +70,7 @@ export function pointsToMap(points, mapPoint = (I) => 1) {
     return o;
   }, {});
 }
+
 export function mapToPoints(map) {
   return Object.keys(map).map(keyToPoint);
 }
@@ -143,6 +145,13 @@ export function flip(pxls, vertical = false, [width, height]) {
     o[pos] = val;
     return o;
   }, {});
+}
+
+export function flipPoints(points, vertical = false, [width, height]) {
+  return points.map(([x, y]) => [
+    !vertical ? width - x - 1 : x,
+    !vertical ? y : height - y - 1,
+  ]);
 }
 
 /**
