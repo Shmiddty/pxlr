@@ -13,8 +13,24 @@ import {
 
 const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
 
+const numSides = {
+  [Shapes.sqaure]: 4,
+  [Shapes.squareOutline]: 4,
+  [Shapes.circle]: 360,
+  [Shapes.circleOutline]: 360,
+  [Shapes.triangle]: 3,
+  [Shapes.triangleOutline]: 3,
+  [Shapes.pentagon]: 5,
+  [Shapes.pentagonOutline]: 5,
+  [Shapes.hexagon]: 6,
+  [Shapes.hexagonOutline]: 6,
+  [Shapes.octagon]: 8,
+  [Shapes.octagonOutline]: 8,
+};
+
 export const getBrush = (size, shape, stroke, orientation = 0) => {
-  let points;
+  let points,
+    n = numSides[shape];
   switch (shape) {
     case Shapes.square:
       points = rect(size);
@@ -23,16 +39,10 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
       points = circle(size);
       break;
     case Shapes.triangle:
-      points = polygon(size, 3);
-      break;
     case Shapes.pentagon:
-      points = polygon(size, 5);
-      break;
     case Shapes.hexagon:
-      points = polygon(size, 6);
-      break;
     case Shapes.octagon:
-      points = polygon(size, 8);
+      points = polygon(size, n);
       break;
     case Shapes.squareOutline:
       points = subtractPoints(rect(size), rect(Math.max(0, size - stroke * 2)));
@@ -44,36 +54,29 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
       );
       break;
     case Shapes.triangleOutline:
-      points = subtractPoints(
-        polygon(size, 3),
-        polygon(Math.max(0, size - stroke * adj(3)), 3)
-      );
-      break;
     case Shapes.pentagonOutline:
-      points = subtractPoints(
-        polygon(size, 5),
-        polygon(Math.max(0, size - stroke * adj(5)), 5)
-      );
-      break;
     case Shapes.hexagonOutline:
-      points = subtractPoints(
-        polygon(size, 6),
-        polygon(Math.max(0, size - stroke * adj(6)), 6)
-      );
-      break;
     case Shapes.octagonOutline:
       points = subtractPoints(
-        polygon(size, 8),
-        polygon(Math.max(0, size - stroke * adj(8)), 8)
+        polygon(size, n),
+        polygon(Math.max(0, size - stroke * adj(n)), n)
       );
       break;
-
     default:
       points = [];
   }
 
-  if (orientation)
-    return interpolate(points.map((p) => rotate(p, orientation)), .44);
+  if (orientation) {
+    if (shape === Shapes.circle || shape === Shapes.circleOutline)
+      return points;
+
+    if ((orientation % ((2 * Math.PI) / n)).toFixed(4) == 0) return points;
+
+    return interpolate(
+      points.map((p) => rotate(p, orientation)),
+      0.44
+    );
+  }
 
   return points;
 };
@@ -144,7 +147,7 @@ export function getBrushPositions(
   }
 ) {
   function floorEm(vector) {
-    return vector.map(v => Math.floor(v));
+    return vector.map((v) => Math.floor(v));
   }
 
   const pointer = add(position, [size / 2 - 1 / 2, size / 2 - 1 / 2]);
@@ -164,16 +167,18 @@ export function getBrushPositions(
     );
 
   if (rs) {
-    const center = [width / 2, height / 2];
-    const pcVec = subtract(center, pointer);
+    // TODO: these are slightly off... Or maybe the anchor brush is off... 
+    const center = [width / 2 - 1 / 2, height / 2 - 1 / 2];
+    const pcVec = floorEm(subtract(center, pointer));
     const R = magnitude(pcVec);
-    const a0 = angle(pcVec);  
+    const a0 = angle(pcVec);
     for (let theta = rs; theta < 360; theta += rs) {
       const ang = (theta / 180) * Math.PI;
       positions.push(
-        ...getBrush(size, shape, stroke, ang).map(
-          fAdd(add(center, scale(unit(ang + a0), -R)))
-        ).map(floorEm)
+        ...getBrush(size, shape, stroke, ang)
+          // TODO: something here is causing gaps
+          .map(fAdd(add(center, scale(unit(ang + a0), -R))))
+          .map(floorEm)
       );
     }
   }
