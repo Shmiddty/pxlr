@@ -176,7 +176,7 @@ export function getBrushPositions(
       const delta = add(center, scale(unit(ang + a0), -R));
       positions.push(
         ...getBrush(size, shape, stroke, ang)
-          .map(fAdd((delta)))
+          .map(fAdd(floorEm(delta)))
           .map(floorEm)
       );
     }
