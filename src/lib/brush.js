@@ -14,12 +14,12 @@ import {
 const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
 
 const numSides = {
-  [Shapes.sqaure]: 4,
-  [Shapes.squareOutline]: 4,
   [Shapes.circle]: 360,
   [Shapes.circleOutline]: 360,
   [Shapes.triangle]: 3,
   [Shapes.triangleOutline]: 3,
+  [Shapes.square]: 4,
+  [Shapes.squareOutline]: 4,
   [Shapes.pentagon]: 5,
   [Shapes.pentagonOutline]: 5,
   [Shapes.hexagon]: 6,
@@ -42,10 +42,13 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
     case Shapes.pentagon:
     case Shapes.hexagon:
     case Shapes.octagon:
-      points = polygon(size, n);
+      points = polygon(size, n, orientation);
       break;
     case Shapes.squareOutline:
-      points = subtractPoints(rect(size), rect(Math.max(0, size - stroke * 2)));
+      points = subtractPoints(
+        rect(size), 
+        rect(Math.max(0, size - stroke * 2))
+      );
       break;
     case Shapes.circleOutline:
       points = subtractPoints(
@@ -58,20 +61,15 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
     case Shapes.hexagonOutline:
     case Shapes.octagonOutline:
       points = subtractPoints(
-        polygon(size, n),
-        polygon(Math.max(0, size - stroke * adj(n)), n)
+        polygon(size, n, orientation),
+        polygon(Math.max(0, size - stroke * adj(n)), n, orientation)
       );
       break;
     default:
       points = [];
   }
 
-  if (orientation) {
-    if (shape === Shapes.circle || shape === Shapes.circleOutline)
-      return points;
-
-    if ((orientation % ((2 * Math.PI) / n)).toFixed(4) == 0) return points;
-
+  if (orientation && (n === 4)) {
     return interpolate(
       points.map((p) => rotate(p, orientation)),
       0.44
@@ -149,8 +147,8 @@ export function getBrushPositions(
   function floorEm(vector) {
     return vector.map((v) => Math.floor(v));
   }
-  
-  const pointer = add(position, [size / 2 + 1/2, size / 2 + 1/2]);
+  const cAdj = scale([1,1], (size % 2) / 2);
+  const pointer = add(position, add(cAdj, scale([1,1], size/2)));
   const brush = getBrush(size, shape, stroke).map(fAdd(pointer)).map(floorEm);
 
   const positions = [...brush];
@@ -167,7 +165,7 @@ export function getBrushPositions(
     );
 
   if (rs) {
-    const center = [width / 2 + 1/2, height / 2 + 1/2];
+    const center = add([width / 2, height / 2], cAdj);
     const pcVec = subtract(center, pointer);
     const R = magnitude(pcVec);
     const a0 = angle(pcVec);

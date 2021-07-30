@@ -25,7 +25,9 @@ export const circle = memo((diameter) => {
   return out;
 });
 
-export const polygon = memo((diameter, n) => {
+// TODO: there might be an issue with this method. 
+// when n = 4, sometimes a larger diameter results in a smaller brush than does a smaller diameter. 
+export const polygon = memo((diameter, n, orientation = 0) => {
   const out = [],
     radius = diameter / 2,
     d = (2 * Math.PI) / n;
@@ -33,13 +35,13 @@ export const polygon = memo((diameter, n) => {
 
   for (let y = 0; y < diameter; y++) {
     for (let x = 0; x < diameter; x++) {
-      const px = x - radius + 1 / 2,
-        py = y - radius + 1 / 2;
+      const px = x - radius,
+        py = y - radius;
       const theta = Math.abs(
-        (((5 / 2) * Math.PI + Math.atan2(py, px)) % d) - d / 2
+        (((9 / 2) * Math.PI - orientation + Math.atan2(py, px)) % d) - d / 2
       );
       const R = h / Math.cos(theta);
-      if (px ** 2 + py ** 2 < R ** 2)
+      if (px ** 2 + py ** 2 <= R ** 2)
         out.push([Math.floor(x - radius), Math.floor(y - radius)]);
     }
   }
