@@ -1,5 +1,6 @@
 import memo from "../util/memo";
 import { bfs } from "../util/search";
+import * as V from './vectr';
 
 export const rect = memo((width, height = width) => {
   const out = [];
@@ -47,6 +48,75 @@ export const polygon = memo((diameter, n, orientation = 0) => {
   }
   return out;
 });
+
+// y = mx + b
+function intersection([m0, b0], [m1, b1]) {
+  if (m0 === m1) {
+    if (b0 !== b1) return null;
+    return Infinity;
+    // TODO: What's the best way to indicate that it 
+    // intersects at all x positions?
+  }
+ 
+  const y = (m1 * b0 - m0 * b1) / (m1 - m0);
+  const x = (y - b0) / m0;
+  return [x, y]; 
+}
+
+function getLine(p0, p1) {
+  const [dx, dy] = V.subtract(p0, p1);
+  const m = dx ? dy / dx : Infinity;
+  const [x, y] = p0;
+  const b = y - m * x;
+  return [m, b];
+}
+
+export const rayPoly = memo((diameter, n, orientation = 0) => {
+  const segments = [];
+  const radius = Math.floor(diameter / 2);
+  const deltaTheta = (2 * Math.PI) / n;
+  let lastPoint = V.scale(V.unit(orientation), radius);
+  for (let i = 1; i <= n; i++) {
+    const point = V.rotate(lastPoint, deltaTheta);
+    segments.push([lastPoint, lastPoint = point]);
+  }
+  console.log(segments);
+  const points = [];
+  for (let y = 0; y < diameter; y++) {
+    let intersections = segments
+      .map(s => {
+        let intersect = intersection(getLine(...s), [0, y - radius]);
+        let [[ax, ay], [bx, by]] = s
+          , [minX, maxX] = ax < bx ? [ax, bx] : [bx, ax]
+          , [minY, maxY] = ay < by ? [ay, by] : [by, ay];
+
+        // I think this is covered by other cases
+        if (intersect === Infinity) return false;
+        if (intersect === null) return false;
+
+        let [ix, iy] = intersect;
+        if (ix >= minX && ix <= maxX && iy >= minY && iy <= maxY) 
+          return intersect
+        
+        return false;
+      })
+      .filter(Boolean)
+      .sort(([ax], [bx]) => ax - bx)
+    if (intersections.length === 2) {
+      let [[ax], [bx]] = intersections;
+      ax = Math.round(ax);
+      bx = Math.round(bx);
+      const rowPoints = [];
+      for (let x = ax; x <= bx; x++) {
+        rowPoints.push([x, y - radius]);
+      }
+      points.push(...rowPoints);
+    }
+  }
+  return points;
+});
+
+rayPoly(9, 6, Math.PI / 4);
 
 export function add(a, b) {
   return Object.assign({}, a, b);

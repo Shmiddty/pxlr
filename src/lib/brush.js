@@ -1,5 +1,5 @@
 import { Modes, Shapes, Mirror } from "../const/brush";
-import { circle, rect, polygon, subtractPoints, flipPoints } from "../lib/pxls";
+import { circle, rect, polygon, rayPoly, subtractPoints, flipPoints } from "../lib/pxls";
 import {
   add,
   angle,
@@ -42,7 +42,7 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
     case Shapes.pentagon:
     case Shapes.hexagon:
     case Shapes.octagon:
-      points = polygon(size, n, orientation);
+      points = rayPoly(size, n, orientation);
       break;
     case Shapes.squareOutline:
       points = subtractPoints(
