@@ -3,10 +3,10 @@ import cn from '../../util/classnames';
 import Key from './Key';
 import { WrappedIcon } from '../Icon';
 
-function CarouselItem ({ value, icon, label, ...rest }) {
+function CarouselItem ({ value, icon, label, selected, ...rest }) {
   return (
     <label
-      className="carousel-item key" 
+      className={cn("carousel-item key", selected && "active")} 
       {...rest}
     >
       <WrappedIcon icon={icon} />
@@ -34,9 +34,10 @@ export default function Carousel({
       onKey={onNext}
       {...props}
     > 
-      { options.map(({ value, icon, label }) => ( 
+      { options.map((item,i,a,{ value, icon, label }=item) => ( 
         <CarouselItem
           key={label}
+          selected={selectedItem === item}
           onClick={() => select(value)}
           value={value}
           icon={icon}

@@ -163,34 +163,48 @@
   font-weight: bold;
   text-shadow: 1px 1px 3px #000;
 }
+.keyboard .rotational-symmetry:hover > span {
+  display: none;
+}
 
 .keyboard .carousel {
   overflow: visible;
   z-index: 2;
 }
-
+.keyboard .carousel > .icon {
+  display: block; 
+}
 .keyboard .carousel .carousel-item {
   display: none;
 }
 
 .keyboard .carousel:hover {
   opacity: 1;
+  height:fit-content;
+  background: #c70;
+  border-color: #c70;
+  border-width: 1px 3px 3px 3px;
+  transition: none;
 }
 
 .keyboard .carousel:hover .carousel-item {
   display: block;
-  width: 100%;
+  border: none;
+  color: #eef;
+  width: auto;
   opacity: 1;
   pointer-events: all;
   cursor: pointer;
-  margin-top: -1px; /* TODO: icky hacky */
+  margin-top: 3px;
 }
+
 .keyboard .carousel:hover .carousel-item span {
   display: inline;
   font-size: .4em;
 }
-.keyboard .carousel .carousel-item:hover {
-  background: inherit;
+.keyboard .carousel .carousel-item:hover,
+.keyboard .carousel .carousel-item.active {
+  background: #fa0;
 }
 
 .keyboard .numeric.input {
