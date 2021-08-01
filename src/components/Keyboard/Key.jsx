@@ -11,6 +11,10 @@ export default function Key({
   children,
   prependChildren = false,
   onKey = NP => NP,
+  onKeyShift = NP => NP,
+  onKeyCtrl = NP => NP,
+  onKeyAlt = NP => NP,
+  isRepeatable = false,
   activeTime = 250,
   ...rest // TODO: this is usually kinda finicky
 }) {
@@ -22,8 +26,11 @@ export default function Key({
       setTimeout(() => setActive(false), activeTime);
     }
   }, [activeTime, onKey]);
-  useKeypress(code, activateOnKey);
-
+  useKeypress(code, activateOnKey, { repeat: isRepeatable });
+  useKeypress(code, onKeyShift, { shift: true, repeat: isRepeatable });
+  useKeypress(code, onKeyCtrl, { ctrl: true, repeat: isRepeatable });
+  useKeypress(code, onKeyAlt, { alt: true, repeat: isRepeatable });
+  
   return (
     <label
       data-key={code}

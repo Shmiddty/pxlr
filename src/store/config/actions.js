@@ -5,12 +5,14 @@ export const types = makeEnum([
   "mode",
   "brush",
   "nextBrush",
+  "previousBrush",
   "tool",
   "mirror",
   "size",
   "stroke",
   "rotationalSymmetry",
   "nextSymmetry",
+  "previousSymmetry",
   "background"
 ]);
 
@@ -31,6 +33,9 @@ export function nextBrush() {
   return { type: types.nextBrush };
 }
 
+export function previousBrush() {
+  return { type: types.previousBrush };
+}
 export function activateTool(tool) {
   return { type: types.tool, payload: tool };
 }
@@ -53,6 +58,10 @@ export function setSymmetry(degrees) {
 
 export function nextSymmetry() {
   return { type: types.nextSymmetry };
+}
+
+export function previousSymmetry() {
+  return { type: types.previousSymmetry };
 }
 
 export function setSize(size) {

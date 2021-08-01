@@ -114,12 +114,14 @@ export default [
       decreaseProps: {
         code: 'BracketLeft',
         label: 'Smaller Image',
-        icon: 'image-size-select-small'
+        icon: 'image-size-select-small',
+        isRepeatable: false
       },
       increaseProps: {
         code: 'BracketRight',
         label: 'Bigger Image',
-        icon: 'image-size-select-large'
+        icon: 'image-size-select-large',
+        isRepeatable: false
       }
     }
   },
@@ -137,12 +139,15 @@ export default [
       decreaseProps: {
         code: 'Semicolon',
         label: 'Smaller Brush',
-        icon: 'pencil-minus'
+        icon: 'pencil-minus',
+        isRepeatable: true
       },
       increaseProps: {
         code: 'Quote',
         label: 'Bigger Brush',
-        icon: 'pencil-plus'
+        icon: 'pencil-plus',
+        isRepeatable: true
+
       }
     }
   },
@@ -160,12 +165,16 @@ export default [
       decreaseProps: {
         code: 'Period',
         label: 'Smaller Stroke',
-        icon: 'pencil-minus-outline'
+        icon: 'pencil-minus-outline',
+        isRepeatable: true
+
       },
       increaseProps: {
         code: 'Slash',
         label: 'Bigger Stroke',
-        icon: 'pencil-plus-outline'
+        icon: 'pencil-plus-outline',
+        isRepeatable: true
+
       }
     }
   }

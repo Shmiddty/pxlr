@@ -1,8 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { nextBrush, setBrush } from '../../store/config/actions';
+import React from "react";
+import { connect } from "react-redux";
+import { nextBrush, previousBrush, setBrush } from "../../store/config/actions";
 
-import Carousel from './Carousel';
+import Carousel from "./Carousel";
 
 export const BrushShape = (props) => (
   <Carousel className="brush-shape" {...props} />
@@ -10,10 +10,11 @@ export const BrushShape = (props) => (
 
 export default connect(
   (state, { options }) => ({
-    selectedItem: options.find(b => b.value === state.config.brush)
+    selectedItem: options.find((b) => b.value === state.config.brush),
   }),
-  dispatch => ({
+  (dispatch) => ({
     onNext: () => dispatch(nextBrush()),
-    select: shape => dispatch(setBrush(shape))
+    onPrevious: () => dispatch(previousBrush()),
+    select: (shape) => dispatch(setBrush(shape)),
   })
 )(BrushShape);

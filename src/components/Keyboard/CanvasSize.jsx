@@ -44,7 +44,8 @@ export default connect(
     inputProps: {
       ...inputProps,
       value: size,
-      onKey: resetSize,
+      onKey: I=>I,
+      onKeyShift: resetSize,
       onChange: e => setSize(+e.target.value)
     },
     decreaseProps: {

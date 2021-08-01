@@ -19,6 +19,7 @@ export default function Carousel({
   className,
   options,
   onNext,
+  onPrevious,
   select,
   selectedIndex = 0,
   selectedItem = options[selectedIndex] || {},
@@ -32,6 +33,8 @@ export default function Carousel({
       icon={icon}
       label={label}
       onKey={onNext}
+      onKeyShift={onPrevious}
+      onKeyAlt={() => select(options[0].value)} 
       {...props}
     > 
       { options.map((item,i,a,{ value, icon, label }=item) => ( 

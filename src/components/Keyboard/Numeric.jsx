@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef, useMemo } from 'react';
 import cn from '../../util/classnames';
+import useKeypress from './useKeypress'; 
 import Key from './Key';
 
 export default function Numeric({ 
@@ -9,20 +10,31 @@ export default function Numeric({
     step,
     value,
     onChange,
+    onKey, 
     ...inputProps
   },
   decreaseProps,
   increaseProps,
   ...props 
 }) {
+  const ref = useRef();
+  const focusOnKey = useMemo(() => {
+    return () => {
+      ref.current && ref.current.focus();
+      onKey();
+    }
+  });
+
   return (
     <Fragment>
       <Key 
         className={cn('numeric', 'input')} 
+        onKey={focusOnKey}
         { ...inputProps }
       >
         <input
           type="number"
+          ref={ref}
           min={min}
           max={max}
           step={step}
