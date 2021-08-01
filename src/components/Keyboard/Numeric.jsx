@@ -1,6 +1,5 @@
 import React, { Fragment, useRef, useMemo } from 'react';
 import cn from '../../util/classnames';
-import useKeypress from './useKeypress'; 
 import Key from './Key';
 
 export default function Numeric({ 
@@ -23,7 +22,7 @@ export default function Numeric({
       ref.current && ref.current.focus();
       onKey();
     }
-  });
+  }, [ref, onKey]);
 
   return (
     <Fragment>
