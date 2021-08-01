@@ -157,19 +157,20 @@
   position: absolute;
   font-size: .3em;
   line-height: 1;
-  bottom: .1em;
+  top: 2em;
   right: .2em;
   color: #fff;
   font-weight: bold;
   text-shadow: 1px 1px 3px #000;
 }
-.keyboard .rotational-symmetry:hover > span {
-  display: none;
+.keyboard .rotational-symmetry.active:hover > span {
+  margin-right: -2px;
 }
 
 .keyboard .carousel {
   overflow: visible;
   z-index: 2;
+  transition: background-color 250ms linear, border-color 250ms linear;
 }
 .keyboard .carousel > .icon {
   display: block; 

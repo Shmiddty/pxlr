@@ -37,14 +37,14 @@ export default function Carousel({
       onKeyAlt={() => select(options[0].value)} 
       {...props}
     > 
-      { options.map((item,i,a,{ value, icon, label }=item) => ( 
+      { options.map((item) => ( 
         <CarouselItem
-          key={label}
+          key={item.label}
           selected={selectedItem === item}
-          onClick={() => select(value)}
-          value={value}
-          icon={icon}
-          label={label}
+          onClick={() => select(item.value)}
+          value={item.value}
+          icon={item.icon}
+          label={item.label}
         /> 
       ))}
     </Key>
