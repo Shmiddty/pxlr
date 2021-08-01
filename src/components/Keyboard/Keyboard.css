@@ -38,6 +38,10 @@
   vertical-align: top;
 }
 
+.keyboard .icon.mdi-rotate-90 {
+  text-shadow: 1px -1px 2px #0005
+}
+
 .keyboard .key {
   background: #335;
   color: #77b;

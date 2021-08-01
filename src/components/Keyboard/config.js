@@ -84,9 +84,14 @@ export default [
     component: BrushShape,
     props: {
       code: 'Tab',
-      options: shapes.map(s => (
-        { value: Shapes[s], icon: snek(s), label: srs(s) }
-      ))
+      options: shapes.map(s => ({ 
+        value: Shapes[s], 
+        icon: { 
+          name: snek(s), 
+          rotate: s.includes("hexagon") ? 90 : 0 
+        }, 
+        label: srs(s) 
+      }))
     }
   },
   {
