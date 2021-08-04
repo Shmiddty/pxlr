@@ -1,15 +1,6 @@
-import { Modes, Shapes, Mirror } from "../const/brush";
+import { Shapes, Mirror } from "../const/brush";
 import { circle, rect, polygon, subtractPoints, flipPoints } from "../lib/pxls";
-import {
-  add,
-  angle,
-  fAdd,
-  rotate,
-  subtract,
-  magnitude,
-  scale,
-  unit,
-} from "../lib/vectr";
+import { add, fAdd, rotate, scale, floorEm, roundEm } from "../lib/vectr";
 
 const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
 
@@ -45,10 +36,7 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
       points = polygon(size, n, orientation);
       break;
     case Shapes.squareOutline:
-      points = subtractPoints(
-        rect(size), 
-        rect(Math.max(0, size - stroke * 2))
-      );
+      points = subtractPoints(rect(size), rect(Math.max(0, size - stroke * 2)));
       break;
     case Shapes.circleOutline:
       points = subtractPoints(
@@ -69,7 +57,7 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
       points = [];
   }
 
-  if (orientation && (n === 4)) {
+  if (orientation && n === 4) {
     return interpolate(
       points.map((p) => rotate(p, orientation)),
       0.44
@@ -144,11 +132,8 @@ export function getBrushPositions(
     rotationalSymmetry: rs,
   }
 ) {
-  function floorEm(vector) {
-    return vector.map((v) => Math.floor(v));
-  }
-  const cAdj = scale([1,1], (size % 2) / 2);
-  const pointer = add(position, add(cAdj, scale([1,1], size/2)));
+  const cAdj = scale([1, 1], (size % 2) / 2);
+  const pointer = add(position, add(cAdj, scale([1, 1], size / 2)));
   const brush = getBrush(size, shape, stroke).map(fAdd(pointer)).map(floorEm);
 
   const positions = [...brush];
@@ -165,17 +150,13 @@ export function getBrushPositions(
     );
 
   if (rs) {
-    const center = add([width / 2, height / 2], cAdj);
-    const pcVec = subtract(center, pointer);
-    const R = magnitude(pcVec);
-    const a0 = angle(pcVec);
+    const center = [width / 2, height / 2];
     for (let theta = rs; theta < 360; theta += rs) {
       const ang = (theta / 180) * Math.PI;
-      const delta = add(center, scale(unit(ang + a0), -R));
       positions.push(
         ...getBrush(size, shape, stroke, ang)
-          .map(fAdd(floorEm(delta)))
-          .map(floorEm)
+          .map(fAdd(rotate(pointer, ang, center)))
+          .map(roundEm)
       );
     }
   }

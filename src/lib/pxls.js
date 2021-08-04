@@ -1,6 +1,5 @@
 import memo from "../util/memo";
 import { bfs } from "../util/search";
-import * as V from './vectr';
 
 export const rect = memo((width, height = width) => {
   const out = [];
@@ -26,8 +25,8 @@ export const circle = memo((diameter) => {
   return out;
 });
 
-// TODO: there might be an issue with this method. 
-// when n = 4, sometimes a larger diameter results in a smaller brush than does a smaller diameter. 
+// TODO: there might be an issue with this method.
+// when n = 4, sometimes a larger diameter results in a smaller brush than does a smaller diameter.
 export const polygon = memo((diameter, n, ori = 0) => {
   const out = [],
     radius = diameter / 2,
@@ -39,7 +38,7 @@ export const polygon = memo((diameter, n, ori = 0) => {
       const px = x - radius,
         py = y - radius;
       const theta = Math.abs(
-        ((7/2*Math.PI + d/2 - ori + Math.atan2(py, px)) % d) - d / 2
+        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(py, px)) % d) - d / 2
       );
       const R = h / Math.cos(theta);
       if (px ** 2 + py ** 2 <= R ** 2)
