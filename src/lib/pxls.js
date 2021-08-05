@@ -290,6 +290,7 @@ export function imageDataToPxls({ data, width, height }) {
   }, {});
 }
 
+// TODO: I think could also support translations fairly simply by adding an offset member with the type point. Would need to adjust the indexToPoint and pointToIndex calls to account for the offset. Negative indices could be problematic.
 export default class Pxls extends Array {
   constructor(width, height = width) {
     super(width * height);
@@ -304,11 +305,82 @@ export default class Pxls extends Array {
   }
 
   set(point, color) {
+    // TODO: if color is empty or transparent, should I delete instead of setting?
     this[this.__p2i(point)] = color;
+    return this;
+  }
+
+  union(pxls) {
+    pxls.flatten().forEach(([point, color]) => this.set(point, color));
+    return this;
+  }
+
+  difference(pxls, symmetric = false) {
+    if (symmetric) {
+      pxls.flatten().forEach(([point, color]) => {
+        if (this.get(point)) this.clear(point);
+        else this.set(point, color);
+      });
+    } else this.remove(pxls.flatten());
+    return this;
   }
 
   clear(point) {
     delete this[this.__p2i(point)];
+    return this;
+  }
+
+  remove(points) {
+    points.forEach((point) => this.clear(point));
+    return this;
+  }
+
+  // Flip about a central axis
+  // TODO: there's some name confusion here
+  // as the idiom seems to be that flipping horizontally is a
+  // reflection on the vertical axis
+  flip(vertical = false) {
+    // TODO: is slice necessary to not cause weirdness by mutating it while enumerating it?
+    this.slice().forEach((color, i) => {
+      const [x, y] = this.__i2p(i);
+      const pt = [
+        !vertical ? this.width - x - 1 : x,
+        !vertical ? y : this.height - y - 1,
+      ];
+      this[this.__p2i(pt)] = color;
+    });
+    return this;
+  }
+
+  // Rotate 90 degrees
+  turn(clockwise = true) {
+    this.slice().forEach((color, i) => {
+      let [x, y] = this.__i2p(i);
+      let pos = clockwise ? [this.height - y - 1, x] : [y, this.width - x - 1];
+      this[this.__p2i(pos)] = color;
+    });
+    return this;
+  }
+
+  // TODO: better name... Serialize maybe?
+  flatten() {
+    return this.map((c, i) => [this.__i2p(i), c]).filter(Boolean);
+  }
+
+  // how should this work?
+  // if b is a subset of a, what should the resulting width/height be?
+  // should the points be offset by the relative position of b within a?
+  // could have the width/height be the larger of the two in cases where they differ.
+  // or could calculate the width/height after the difference has been found
+  static intersection(a, b) {
+    throw new Error("Not implemented");
+  }
+
+  static fromFlat(arr, width, height) {
+    if (!width) width = Math.max(...arr.map(([[x]]) => x)) + 1;
+    if (!height) height = width;
+
+    return arr.reduce((o, args) => o.set(...args), new Pxls(width, height));
   }
 
   static fromImageData({ data, width, height }) {
