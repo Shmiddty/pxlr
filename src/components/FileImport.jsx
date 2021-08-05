@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import chunk from "lodash/chunk";
 import makeEnum from "../util/makeEnum";
 import cn from "../util/classnames";
 import { setPxls, resize } from "../store/canvas/actions";
 import "./FileImport.css";
+import { imageDataToPxls } from "../lib/pxls";
 
 function getImage(file) {
   return new Promise((resolve, reject) => {
@@ -33,20 +33,6 @@ function getImageData(img) {
   can.height = hei;
   ctx.drawImage(img, 0, 0, wid, hei);
   return ctx.getImageData(0, 0, wid, hei);
-}
-
-function imageDataToPxls({ data, width, height }) {
-  return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
-    let x = i % width,
-      y = Math.floor(i / width);
-    if (a === 0) return o;
-
-    o[[x, y]] = [r, g, b, a].reduce(
-      (o, v) => o + v.toString(16).padStart(2, "0"),
-      "#"
-    );
-    return o;
-  }, {});
 }
 
 function validateSize(size) {

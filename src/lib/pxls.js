@@ -1,6 +1,14 @@
+import chunk from "lodash/chunk";
 import memo from "../util/memo";
 import { bfs } from "../util/search";
 
+/**
+ * Return a collection of points representing the pixels in a rectangle
+ * of the specified size.
+ *
+ * width - the width of the rectangle
+ * height - the height of the rectangle
+ */
 export const rect = memo((width, height = width) => {
   const out = [];
   for (let y = 0; y < height; y++) {
@@ -11,6 +19,12 @@ export const rect = memo((width, height = width) => {
   return out;
 });
 
+/**
+ * Return a collection of points representing the pixels in a circle
+ * of the specified diameter.
+ *
+ * diameter - the diameter of the circle
+ */
 export const circle = memo((diameter) => {
   const out = [],
     radius = diameter / 2;
@@ -25,8 +39,14 @@ export const circle = memo((diameter) => {
   return out;
 });
 
-// TODO: there might be an issue with this method.
-// when n = 4, sometimes a larger diameter results in a smaller brush than does a smaller diameter.
+/**
+ * Return an array of points representing the pixels in regular polygon
+ * with the specified diameter, number of sides, and orientation.
+ *
+ * diameter - twice the length from the center to one of the points
+ * n - number of sides/points
+ * ori - the angle offset
+ */
 export const polygon = memo((diameter, n, ori = 0) => {
   const out = [],
     radius = diameter / 2,
@@ -48,31 +68,91 @@ export const polygon = memo((diameter, n, ori = 0) => {
   return out;
 });
 
+/**
+ * Add/Merge two pxl maps together. Values in both a and b will be
+ * replaced by b.
+ *
+ * a - the base pxl map
+ * b - the pxl map to layer on top of a
+ */
 export function add(a, b) {
   return Object.assign({}, a, b);
 }
 
+/**
+ * Subtract the keys of b from the keys of a
+ */
 export function subtract(a, b) {
   const copy = Object.assign({}, a);
   Object.keys(b).forEach((k) => delete copy[k]);
   return copy;
 }
+
+/**
+ * Given two collections of points, remove from the first collection
+ * the points found in the second collection.
+ */
 export function subtractPoints(a, b) {
   const bMap = pointsToMap(b);
-  return a.filter((p) => !bMap[p]);
+  return a.filter((p) => !bMap[pointToKey(p)]);
 }
 
+/**
+ * Returns a function that will convert the index from a 1d imageData
+ * into a 2d point
+ *
+ * width - the width of the 2d image
+ */
+export function indexToPoint(width) {
+  return function (index) {
+    return [index % width, Math.floor(index / width)];
+  };
+}
+
+/**
+ * Returns a function that will convert a 2d point into the
+ * corresponding index from a 1d imageData
+ *
+ * width - the width of the 2d image
+ */
+export function pointToIndex(width) {
+  return function ([x, y]) {
+    return y * width + x;
+  };
+}
+
+/**
+ * Converts a 2d point into a key for use in an object map
+ */
 export function keyToPoint(key) {
   return key.split(",").map(Number);
 }
 
+/**
+ * Converts the key from an object map into a 2d point
+ */
+export function pointToKey(point) {
+  return point.toString();
+}
+
+/**
+ * Convert a collection of 2d points into an object map
+ *
+ * points - the collection of points
+ * mapPoint - Function - a mapping function for each point
+ */
 export function pointsToMap(points, mapPoint = (I) => 1) {
   return points.reduce((o, p) => {
-    o[p] = mapPoint(p);
+    o[pointToKey(p)] = mapPoint(p);
     return o;
   }, {});
 }
 
+/**
+ * Convert an object map into a collection of points
+ *
+ * map - the map to convert
+ */
 export function mapToPoints(map) {
   return Object.keys(map).map(keyToPoint);
 }
@@ -87,7 +167,7 @@ export function flattenPxls(pxls, width, height = width) {
   const out = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      out.push(pxls[[x, y]] || 0);
+      out.push(pxls[pointToKey([x, y])] || 0);
     }
   }
   return out;
@@ -112,7 +192,7 @@ export function colorMapToPxls(colorMap) {
   return Object.entries(colorMap).reduce(
     (o, [color, positions]) =>
       positions.reduce((o, p) => {
-        o[p] = color;
+        o[pointToKey(p)] = color;
         return o;
       }, o),
     {}
@@ -127,9 +207,9 @@ export function colorMapToPxls(colorMap) {
  */
 export function rotate90(pxls, cw = true, [width, height]) {
   return Object.entries(pxls).reduce((o, [key, val]) => {
-    let [x, y] = key.split(",").map(Number);
+    let [x, y] = keyToPoint(key);
     let pos = cw ? [height - y - 1, x] : [y, width - x - 1];
-    o[pos] = val;
+    o[pointToKey(pos)] = val;
     return o;
   }, {});
 }
@@ -142,13 +222,21 @@ export function rotate90(pxls, cw = true, [width, height]) {
  */
 export function flip(pxls, vertical = false, [width, height]) {
   return Object.entries(pxls).reduce((o, [key, val]) => {
-    let [x, y] = key.split(",").map(Number);
+    let [x, y] = keyToPoint(key);
     let pos = [!vertical ? width - x - 1 : x, !vertical ? y : height - y - 1];
-    o[pos] = val;
+    o[pointToKey(pos)] = val;
     return o;
   }, {});
 }
 
+/**
+ * Flip the given points about the specified central axis in the
+ * given rectangle.
+ *
+ * points - the points to flip
+ * vertical - Boolean - true to flip vertically, false for horizontally
+ * rect - [width, height]
+ */
 export function flipPoints(points, vertical = false, [width, height]) {
   return points.map(([x, y]) => [
     !vertical ? width - x - 1 : x,
@@ -164,19 +252,73 @@ export function flipPoints(points, vertical = false, [width, height]) {
  * dimensions - [width, height]
  */
 export function fill(pxls, position, color, [width, height]) {
-  let init = pxls[position];
-  return bfs(
-    position,
-    ([x, y]) => [
-      [x, y - 1],
-      [x, y + 1],
-      [x - 1, y],
-      [x + 1, y],
-    ],
-    ([x, y]) =>
-      x >= 0 && x < width && y >= 0 && y < height && pxls[[x, y]] === init
-  ).reduce((o, pos) => {
-    o[pos] = color;
+  let init = pxls[pointToKey(position)];
+  return Object.assign(
+    pointsToMap(
+      bfs(
+        position,
+        ([x, y]) => [
+          [x, y - 1],
+          [x, y + 1],
+          [x - 1, y],
+          [x + 1, y],
+        ],
+        ([x, y]) =>
+          x >= 0 &&
+          x < width &&
+          y >= 0 &&
+          y < height &&
+          pxls[pointToKey([x, y])] === init
+      ),
+      () => color
+    ),
+    Object.assign({}, pxls)
+  );
+}
+
+export function imageDataToPxls({ data, width, height }) {
+  return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
+    let x = i % width,
+      y = Math.floor(i / width);
+    if (a === 0) return o;
+
+    o[pointToKey([x, y])] = [r, g, b, a].reduce(
+      (o, v) => o + v.toString(16).padStart(2, "0"),
+      "#"
+    );
     return o;
-  }, Object.assign({}, pxls));
+  }, {});
+}
+
+export default class Pxls extends Array {
+  constructor(width, height = width) {
+    super(width * height);
+    this.width = width;
+    this.height = height;
+    this.__p2i = pointToIndex(width);
+    this.__i2p = indexToPoint(width);
+  }
+
+  get(point) {
+    return this[this.__p2i(point)];
+  }
+
+  set(point, color) {
+    this[this.__p2i(point)] = color;
+  }
+
+  clear(point) {
+    delete this[this.__p2i(point)];
+  }
+
+  static fromImageData({ data, width, height }) {
+    return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
+      if (a === 0) return o;
+      o[i] = [r, g, b].reduce(
+        (o, v) => o + v.toString(16).padStart(2, "0"),
+        "#"
+      );
+      return o;
+    }, new Pxls(width, height));
+  }
 }

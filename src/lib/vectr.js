@@ -1,3 +1,7 @@
+export function vector(x, y) {
+  return [x, y];
+}
+
 // adapted from matter-js
 export function rotate([x, y], angle, [cx, cy] = [0, 0]) {
   const cos = Math.cos(angle),
