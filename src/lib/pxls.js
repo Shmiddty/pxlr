@@ -450,7 +450,7 @@ export default class Pxls {
   static compress(pxls) {
     return pxls.__pxls.reduce((o, c, i) => {
       const points = o[c] || [];
-      points.push(pxls.__i2p(i));
+      points.push(i);
       o[c] = points;
       return o;
     }, {});
@@ -459,7 +459,7 @@ export default class Pxls {
   static decompress(colorMap, width, height) {
     return Object.entries(colorMap).reduce(
       (o, [color, points]) =>
-        points.reduce((o, point) => o.set(point, color), o),
+        points.reduce((o, i) => o.set(o.__i2p(i), color), o),
       new Pxls(width, height)
     );
   }
