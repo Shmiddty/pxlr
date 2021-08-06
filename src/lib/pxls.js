@@ -47,6 +47,7 @@ export const circle = memo((diameter) => {
  * n - number of sides/points
  * ori - the angle offset
  */
+//TODO: do side-length instead of diameter
 export const polygon = memo((diameter, n, ori = 0) => {
   const out = [],
     radius = diameter / 2,
@@ -291,22 +292,29 @@ export function imageDataToPxls({ data, width, height }) {
 }
 
 // TODO: I think could also support translations fairly simply by adding an offset member with the type point. Would need to adjust the indexToPoint and pointToIndex calls to account for the offset. Negative indices could be problematic.
-export default class Pxls extends Array {
-  constructor(width, height = width) {
-    super(width * height);
+export default class Pxls {
+  constructor(width = 1, height = width) {
     this.width = width;
     this.height = height;
     this.__p2i = pointToIndex(width);
     this.__i2p = indexToPoint(width);
+    this.__pxls = new Array(width * height);
   }
 
   get(point) {
-    return this[this.__p2i(point)];
+    return this.__pxls[this.__p2i(point)];
   }
 
   set(point, color) {
+    if (
+      point[0] >= this.width ||
+      point[1] >= this.height ||
+      point[0] < 0 ||
+      point[1] < 0
+    )
+      return this;
     // TODO: if color is empty or transparent, should I delete instead of setting?
-    this[this.__p2i(point)] = color;
+    this.__pxls[this.__p2i(point)] = color;
     return this;
   }
 
@@ -326,7 +334,7 @@ export default class Pxls extends Array {
   }
 
   clear(point) {
-    delete this[this.__p2i(point)];
+    delete this.__pxls[this.__p2i(point)];
     return this;
   }
 
@@ -341,32 +349,71 @@ export default class Pxls extends Array {
   // reflection on the vertical axis
   flip(vertical = false) {
     // TODO: is slice necessary to not cause weirdness by mutating it while enumerating it?
-    this.slice().forEach((color, i) => {
+    this.clone().each((color, i) => {
       const [x, y] = this.__i2p(i);
       const pt = [
         !vertical ? this.width - x - 1 : x,
         !vertical ? y : this.height - y - 1,
       ];
-      this[this.__p2i(pt)] = color;
+      this.__pxls[this.__p2i(pt)] = color;
     });
     return this;
   }
 
   // Rotate 90 degrees
   turn(clockwise = true) {
-    this.slice().forEach((color, i) => {
+    this.clone().each((color, i) => {
       let [x, y] = this.__i2p(i);
       let pos = clockwise ? [this.height - y - 1, x] : [y, this.width - x - 1];
-      this[this.__p2i(pos)] = color;
+      this.__pxls[this.__p2i(pos)] = color;
     });
     return this;
   }
 
   // TODO: better name... Serialize maybe?
   flatten() {
-    return this.map((c, i) => [this.__i2p(i), c]).filter(Boolean);
+    return this.__pxls.map((c, i) => [this.__i2p(i), c]).filter(Boolean);
   }
 
+  clone() {
+    return new Pxls(this.width, this.height).union(this);
+  }
+
+  // cb = (color, point, index, pxls) => { ... }
+  each(cb) {
+    return this.__pxls.forEach((c, i) => cb(c, this.__i2p(i), i, this));
+  }
+
+  static clear(pxls, point) {
+    return pxls.clone().clear(point);
+  }
+
+  static remove(pxls, points) {
+    return pxls.clone().remove(points);
+  }
+
+  static set(pxls, point, color) {
+    return pxls.clone().set(point, color);
+  }
+
+  static union(a, b) {
+    return a.clone().union(b);
+  }
+
+  static difference(a, b, symmetric) {
+    return a.clone().difference(b, symmetric);
+  }
+
+  static flip(pxls, vertical) {
+    return pxls.clone().flip(vertical);
+  }
+
+  static turn(pxls, clockwise) {
+    return pxls.clone().turn(clockwise);
+  }
+  static resize(pxls, width, height) {
+    return Pxls.union(new Pxls(width, height), pxls);
+  }
   // how should this work?
   // if b is a subset of a, what should the resulting width/height be?
   // should the points be offset by the relative position of b within a?
@@ -387,10 +434,27 @@ export default class Pxls extends Array {
     return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
       if (a === 0) return o;
       o[i] = [r, g, b].reduce(
-        (o, v) => o + v.toString(16).padStart(2, "0"),
+        (c, v) => c + v.toString(16).padStart(2, "0"),
         "#"
       );
       return o;
     }, new Pxls(width, height));
+  }
+
+  static compress(pxls) {
+    return pxls.__pxls.reduce((o, c, i) => {
+      const points = o[c] || [];
+      points.push(pxls.__i2p(i));
+      o[c] = points;
+      return o;
+    }, {});
+  }
+
+  static decompress(colorMap, width, height) {
+    return Object.entries(colorMap).reduce(
+      (o, [color, points]) =>
+        points.reduce((o, point) => o.set(point, color), o),
+      new Pxls(width, height)
+    );
   }
 }

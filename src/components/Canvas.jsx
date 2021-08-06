@@ -6,37 +6,38 @@ import { setColor, setPaletteIndex } from "../store/palette/actions";
 import { setPxls, bucket } from "../store/canvas/actions";
 import { Modes } from "../const/brush";
 import { getBrushPositions } from "../lib/brush";
-import { keyToPoint } from "../lib/pxls";
+import Pxls from "../lib/pxls";
 import "./Canvas.css";
 import Icon from "./Icon";
 
 function applyBrush(position, props) {
   const { mode, color, pxls } = props;
   return getBrushPositions(position, props).reduce((o, p) => {
+    const pxlAtPos = pxls.get(p);
     switch (mode) {
       case Modes.pencil:
-        o[p] = color;
+        o.set(p, color);
         break;
       case Modes.eraser:
-        o[p] = null;
+        o.clear(p);
         break;
       case Modes.darken:
-        if (pxls[p]) o[p] = Color(pxls[p]).darken(0.1).hex();
+        if (pxlAtPos) o.set(p, Color(pxlAtPos).darken(0.1).hex());
         break;
       case Modes.lighten:
-        if (pxls[p]) o[p] = Color(pxls[p]).lighten(0.1).hex();
+        if (pxlAtPos) o.set(p, Color(pxlAtPos).lighten(0.1).hex());
         break;
       case Modes.invert:
-        if (pxls[p]) o[p] = Color(pxls[p]).negate().hex();
+        if (pxlAtPos) o.set(p, Color(pxlAtPos).negate().hex());
         break;
       case Modes.mix:
-        if (pxls[p]) o[p] = Color(pxls[p]).mix(Color(color), 0.44).hex();
+        if (pxlAtPos) o.set(p, Color(pxlAtPos).mix(Color(color), 0.44).hex());
         break;
       default:
         break;
     }
     return o;
-  }, {});
+  }, pxls.clone());
 }
 
 export class Canvas extends Component {
@@ -58,7 +59,7 @@ export class Canvas extends Component {
 
     this.dbPointerUp = debounce(this.handlePointerUp, 250);
 
-    this.pxlCache = {};
+    this.pxlCache = new Pxls(this.props.width, this.props.height);
     this._mouse = null;
     this._lastMouse = null;
   }
@@ -158,20 +159,22 @@ export class Canvas extends Component {
 
   update() {
     this.props.updatePxls(this.pxlCache, this.props);
-    this.pxlCache = {};
+    // TODO: this.pxlCache.empty() would be better
+    this.pxlCache = new Pxls(this.props.width, this.props.height);
   }
 
   apply(pointer, multi = false) {
     const pos = this.pointerToPos(pointer);
     const newPxls = applyBrush(pos, this.props);
 
-    this.pxlCache = Object.assign({}, this.pxlCache, newPxls);
+    this.pxlCache = Pxls.union(this.pxlCache, newPxls);
 
     cancelAnimationFrame(this.paf);
     this.paf = requestAnimationFrame(() => this.paintPxls(this.pxlCache));
   }
   getPxls() {
-    return Object.assign({}, this.props.pxls, this.pxlCache);
+    if (!this.props.pxls) return this.pxlCache;
+    return Pxls.union(this.props.pxls, this.pxlCache);
   }
 
   paintBg() {
@@ -197,8 +200,7 @@ export class Canvas extends Component {
 
     if (!newPxls) ctx.clearRect(0, 0, width, height);
 
-    Object.entries(pxls).forEach(([pos, color]) => {
-      let [x, y] = keyToPoint(pos);
+    pxls.each((color, [x, y]) => {
       if (!color) return ctx.clearRect(x, y, 1, 1);
       ctx.fillStyle = color;
       ctx.fillRect(x, y, 1, 1);
@@ -229,8 +231,7 @@ export class Canvas extends Component {
       const [x, y] = pos.map((c) => c * rat);
 
       if (brushPreview) {
-        Object.entries(applyBrush(pos, this.props)).forEach(([pos, color]) => {
-          const [x, y] = keyToPoint(pos);
+        applyBrush(pos, this.props).each((color, [x, y]) => {
           if (color) ctx.fillStyle = color;
           else if (mode === Modes.eraser) {
             ctx.fillStyle = background;
@@ -314,7 +315,7 @@ export default connect(
   (dispatch) => ({
     pxlClicked: function (position, props) {
       const { mode, color, palette, pxls } = props;
-
+      const pxlAtPos = pxls.get(position);
       switch (mode) {
         case Modes.pencil:
         case Modes.eraser:
@@ -325,14 +326,14 @@ export default connect(
           return dispatch(setPxls(applyBrush(position, props)));
 
         case Modes.dropper:
-          if (pxls[position]) {
+          if (pxlAtPos) {
             // Switch to the color already in the palette
             // instead of changing the current color
-            if (palette.includes(pxls[position])) {
-              return dispatch(setPaletteIndex(palette.indexOf(pxls[position])));
+            if (palette.includes(pxlAtPos)) {
+              return dispatch(setPaletteIndex(palette.indexOf(pxlAtPos)));
             }
 
-            return dispatch(setColor(pxls[position]));
+            return dispatch(setColor(pxlAtPos));
           }
           break;
         case Modes.bucket:

@@ -1,28 +1,12 @@
 import { createStore, applyMiddleware } from "redux";
-import makePersistence from './redux-localStorage';
-import { Modes, Shapes } from '../const/brush';
-import { pxlsToColorMap, colorMapToPxls } from '../lib/pxls';
+import makePersistence from "./redux-localStorage";
+import { Modes, Shapes } from "../const/brush";
+import Pxls from "../lib/pxls";
 //import logger from './redux-logger';
 
 import reducer from "./reducer";
 
-// TODO: investigate mapping to { [x,y,width,height]: color }
-function dehydratePxls(pxls, width, height = width) {
-  return pxlsToColorMap(pxls);
-}
-
-function isColorMap(colorMap) {
-  let fk = Object.keys(colorMap)[0];
-  return fk && fk[0] === '#';
-}
-
-function rehydratePxls(colorMap, width, height = width) {
-  if (!isColorMap(colorMap)) return colorMap;
-
-  return colorMapToPxls(colorMap);
-}
-
-const [initialState, persist] = makePersistence('pxlr', {
+const [initialState, persist] = makePersistence("pxlr", {
   defaultState: reducer(undefined, {}),
   dehydrate: function (state) {
     return {
@@ -30,13 +14,17 @@ const [initialState, persist] = makePersistence('pxlr', {
       config: {
         ...state.config,
         mode: Modes[state.config.mode],
-        brush: Shapes[state.config.brush]
+        brush: Shapes[state.config.brush],
       },
       canvas: {
         ...state.canvas,
-        pxls: dehydratePxls(state.canvas.pxls, state.canvas.width)
-      }
-    }
+        pxls: Pxls.compress(
+          state.canvas.pxls,
+          state.canvas.width,
+          state.canvas.height
+        ),
+      },
+    };
   },
   rehydrate: function (json) {
     if (!json.config) return {};
@@ -45,25 +33,29 @@ const [initialState, persist] = makePersistence('pxlr', {
       config: {
         ...json.config,
         mode: Modes[json.config.mode],
-        brush: Shapes[json.config.brush]
+        brush: Shapes[json.config.brush],
       },
       canvas: {
         ...json.canvas,
-        pxls: rehydratePxls(json.canvas.pxls, json.canvas.width)
-      }
-    }
-  }
+        pxls: Pxls.decompress(
+          json.canvas.pxls,
+          json.canvas.width,
+          json.canvas.height
+        ),
+      },
+    };
+  },
 });
 
 // TODO: I might want to give each layer its own storage key
 
 const middleware = [
-  //logger, 
-  persist
+  //logger,
+  persist,
 ];
 
 export default createStore(
-  reducer, 
-  initialState, 
+  reducer,
+  initialState,
   applyMiddleware(...middleware)
 );
