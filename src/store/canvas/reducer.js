@@ -154,6 +154,5 @@ export default function (state = initialState, action) {
   } else if (!hist.includes(state)) {
     hist.push(state);
   }
-  console.log(next);
   return next || state;
 }

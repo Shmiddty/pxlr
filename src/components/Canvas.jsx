@@ -12,32 +12,33 @@ import Icon from "./Icon";
 
 function applyBrush(position, props) {
   const { mode, color, pxls } = props;
-  return getBrushPositions(position, props).reduce((o, p) => {
+  return getBrushPositions(position, props).map((p) => {
     const pxlAtPos = pxls.get(p);
+    const out = [p];
     switch (mode) {
       case Modes.pencil:
-        o.set(p, color);
+        out[1] = color;
         break;
       case Modes.eraser:
-        o.clear(p);
+        out[1] = null;
         break;
       case Modes.darken:
-        if (pxlAtPos) o.set(p, Color(pxlAtPos).darken(0.1).hex());
+        if (pxlAtPos) out[1] = Color(pxlAtPos).darken(0.1).hex();
         break;
       case Modes.lighten:
-        if (pxlAtPos) o.set(p, Color(pxlAtPos).lighten(0.1).hex());
+        if (pxlAtPos) out[1] = Color(pxlAtPos).lighten(0.1).hex();
         break;
       case Modes.invert:
-        if (pxlAtPos) o.set(p, Color(pxlAtPos).negate().hex());
+        if (pxlAtPos) out[1] = Color(pxlAtPos).negate().hex();
         break;
       case Modes.mix:
-        if (pxlAtPos) o.set(p, Color(pxlAtPos).mix(Color(color), 0.44).hex());
+        if (pxlAtPos) out[1] = Color(pxlAtPos).mix(Color(color), 0.44).hex();
         break;
       default:
         break;
     }
-    return o;
-  }, pxls.clone());
+    return out;
+  });
 }
 
 export class Canvas extends Component {
@@ -167,7 +168,9 @@ export class Canvas extends Component {
     const pos = this.pointerToPos(pointer);
     const newPxls = applyBrush(pos, this.props);
 
-    this.pxlCache = Pxls.union(this.pxlCache, newPxls);
+    this.pxlCache = this.pxlCache.union(
+      Pxls.fromFlat(newPxls, this.props.width, this.props.height)
+    );
 
     cancelAnimationFrame(this.paf);
     this.paf = requestAnimationFrame(() => this.paintPxls(this.pxlCache));
@@ -231,7 +234,7 @@ export class Canvas extends Component {
       const [x, y] = pos.map((c) => c * rat);
 
       if (brushPreview) {
-        applyBrush(pos, this.props).each((color, [x, y]) => {
+        applyBrush(pos, this.props).forEach(([[x, y], color]) => {
           if (color) ctx.fillStyle = color;
           else if (mode === Modes.eraser) {
             ctx.fillStyle = background;
@@ -323,7 +326,15 @@ export default connect(
         case Modes.lighten:
         case Modes.invert:
         case Modes.mix:
-          return dispatch(setPxls(applyBrush(position, props)));
+          return dispatch(
+            setPxls(
+              Pxls.fromFlat(
+                applyBrush(position, props),
+                props.width,
+                props.height
+              )
+            )
+          );
 
         case Modes.dropper:
           if (pxlAtPos) {

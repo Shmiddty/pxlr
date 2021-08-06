@@ -4,7 +4,7 @@ import makeEnum from "../util/makeEnum";
 import cn from "../util/classnames";
 import { setPxls, resize } from "../store/canvas/actions";
 import "./FileImport.css";
-import { imageDataToPxls } from "../lib/pxls";
+import Pxls from "../lib/pxls";
 
 function getImage(file) {
   return new Promise((resolve, reject) => {
@@ -92,7 +92,7 @@ export class FileImport extends Component {
         this.props.resize(img.width);
         return img;
       })
-      .then(imageDataToPxls)
+      .then(Pxls.fromImageData)
       .then(this.props.setPxls)
       .then(() => this.setStatus(STATUS.success, cleanupTime))
       .catch((e) => this.setStatus(STATUS.error, cleanupTime))

@@ -343,14 +343,19 @@ export default class Pxls {
     return this;
   }
 
+  empty() {
+    this.__pxls = new Array(this.width * this.height);
+  }
+
   // Flip about a central axis
   // TODO: there's some name confusion here
   // as the idiom seems to be that flipping horizontally is a
   // reflection on the vertical axis
   flip(vertical = false) {
     // TODO: is slice necessary to not cause weirdness by mutating it while enumerating it?
-    this.clone().each((color, i) => {
-      const [x, y] = this.__i2p(i);
+    let temp = this.clone();
+    this.empty();
+    temp.each((color, [x, y]) => {
       const pt = [
         !vertical ? this.width - x - 1 : x,
         !vertical ? y : this.height - y - 1,
@@ -362,8 +367,9 @@ export default class Pxls {
 
   // Rotate 90 degrees
   turn(clockwise = true) {
-    this.clone().each((color, i) => {
-      let [x, y] = this.__i2p(i);
+    let temp = this.clone();
+    this.empty();
+    temp.each((color, [x, y]) => {
       let pos = clockwise ? [this.height - y - 1, x] : [y, this.width - x - 1];
       this.__pxls[this.__p2i(pos)] = color;
     });
@@ -433,7 +439,7 @@ export default class Pxls {
   static fromImageData({ data, width, height }) {
     return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
       if (a === 0) return o;
-      o[i] = [r, g, b].reduce(
+      o.__pxls[i] = [r, g, b].reduce(
         (c, v) => c + v.toString(16).padStart(2, "0"),
         "#"
       );
