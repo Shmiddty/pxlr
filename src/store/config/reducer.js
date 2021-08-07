@@ -7,7 +7,7 @@ const initialState = {
   mode: Modes.pencil,
   brush: Shapes.square, // TODO: this should be shape, not brush, maybe.
   mirror: Mirror.none,
-  rotationalSymmetry: false,
+  rotationalSymmetry: 0,
   size: 1,
   stroke: 1,
   background: "#3b3b3b",
