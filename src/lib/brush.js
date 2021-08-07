@@ -1,5 +1,11 @@
 import { Shapes, Mirror } from "../const/brush";
-import { circle, rect, polygon, subtractPoints, flipPoints } from "../lib/pxls";
+import {
+  circle,
+  rect,
+  poly as polygon,
+  subtractPoints,
+  flipPoints,
+} from "../lib/pxls";
 import { add, fAdd, rotate, scale, floorEm, roundEm } from "../lib/vectr";
 
 const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
@@ -23,20 +29,15 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
   let points,
     n = numSides[shape];
   switch (shape) {
-    case Shapes.square:
-      points = rect(size);
-      break;
     case Shapes.circle:
       points = circle(size);
       break;
+    case Shapes.square:
     case Shapes.triangle:
     case Shapes.pentagon:
     case Shapes.hexagon:
     case Shapes.octagon:
       points = polygon(size, n, orientation);
-      break;
-    case Shapes.squareOutline:
-      points = subtractPoints(rect(size), rect(Math.max(0, size - stroke * 2)));
       break;
     case Shapes.circleOutline:
       points = subtractPoints(
@@ -44,6 +45,7 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
         circle(Math.max(0, size - stroke * 2))
       );
       break;
+    case Shapes.squareOutline:
     case Shapes.triangleOutline:
     case Shapes.pentagonOutline:
     case Shapes.hexagonOutline:
@@ -55,13 +57,6 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
       break;
     default:
       points = [];
-  }
-
-  if (orientation && n === 4) {
-    return interpolate(
-      points.map((p) => rotate(p, orientation)),
-      0.44
-    );
   }
 
   return points;

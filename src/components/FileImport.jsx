@@ -114,13 +114,9 @@ export class FileImport extends Component {
         })}
       >
         <section className="waiting-msg">{waitingMessage}</section>
-
         <section className="processing-msg">{processingMessage}</section>
-
         <section className="success-msg">{successMessage}</section>
-
         <section className="error-msg">{errorMessage}</section>
-
         <input
           onChange={this.handleChange}
           accept="image/*" // TODO: this should maybe be a prop?

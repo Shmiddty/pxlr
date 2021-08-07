@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Color from "color";
 import debounce from "lodash/debounce";
 import { setColor, setPaletteIndex } from "../store/palette/actions";
-import { setPxls, bucket } from "../store/canvas/actions";
+import { setPxls, clearPxls, bucket } from "../store/canvas/actions";
 import { Modes } from "../const/brush";
 import { getBrushPositions } from "../lib/brush";
 import Pxls from "../lib/pxls";

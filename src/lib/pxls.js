@@ -1,6 +1,7 @@
 import chunk from "lodash/chunk";
 import memo from "../util/memo";
 import { bfs } from "../util/search";
+import * as V from "./vectr";
 
 /**
  * Return a collection of points representing the pixels in a rectangle
@@ -47,23 +48,38 @@ export const circle = memo((diameter) => {
  * n - number of sides/points
  * ori - the angle offset
  */
-//TODO: do side-length instead of diameter
+//TODO: do side-length instead of diameter?
 export const polygon = memo((diameter, n, ori = 0) => {
   const out = [],
     radius = diameter / 2,
     d = (2 * Math.PI) / n;
   const h = radius * Math.cos(d / 2);
 
-  for (let y = 0; y < diameter; y++) {
-    for (let x = 0; x < diameter; x++) {
-      const px = x - radius,
-        py = y - radius;
+  for (let y = -radius; y <= radius; y++) {
+    for (let x = -radius; x <= radius; x++) {
       const theta = Math.abs(
-        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(py, px)) % d) - d / 2
+        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(y, x)) % d) - d / 2
       );
       const R = h / Math.cos(theta);
-      if (px ** 2 + py ** 2 <= R ** 2)
-        out.push([Math.floor(x - radius), Math.floor(y - radius)]);
+      if (x ** 2 + y ** 2 <= R ** 2) out.push([Math.floor(x), Math.floor(y)]);
+    }
+  }
+  return out;
+});
+
+export const poly = memo((side, n, ori) => {
+  const out = [];
+  const d = (2 * Math.PI) / n;
+  const radius = (Math.sin(d / 2) * side) / 2;
+  const h = radius * Math.cos(d / 2);
+
+  for (let y = -radius; y <= radius; y++) {
+    for (let x = -radius; x <= radius; x++) {
+      const t0 = Math.abs(
+        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(y, x)) % d) - d / 2
+      );
+      const R = h / Math.cos(t0);
+      if (x ** 2 + y ** 2 <= R ** 2) out.push([Math.floor(x), Math.floor(y)]);
     }
   }
   return out;
@@ -81,7 +97,7 @@ export function add(a, b) {
 }
 
 /**
- * Subtract the keys of b from the keys of a
+ct the keys of b from the keys of a
  */
 export function subtract(a, b) {
   const copy = Object.assign({}, a);
@@ -245,6 +261,15 @@ export function flipPoints(points, vertical = false, [width, height]) {
   ]);
 }
 
+function isEmpty(color) {
+  return (
+    color === null ||
+    color === "Transparent" ||
+    color === "null" ||
+    color === ""
+  );
+}
+
 /**
  * fill - fill the contiguous area about the position with the color
  * pxls
@@ -313,7 +338,7 @@ export default class Pxls {
       point[1] < 0
     )
       return this;
-    // TODO: if color is empty or transparent, should I delete instead of setting?
+
     this.__pxls[this.__p2i(point)] = color;
     return this;
   }
@@ -433,7 +458,7 @@ export default class Pxls {
     if (!width) width = Math.max(...arr.map(([[x]]) => x)) + 1;
     if (!height) height = width;
 
-    return arr.reduce((o, args) => o.set(...args), new Pxls(width, height));
+    return arr.reduce((o, [p, c]) => o.set(p, c), new Pxls(width, height));
   }
 
   static fromImageData({ data, width, height }) {
@@ -449,6 +474,7 @@ export default class Pxls {
 
   static compress(pxls) {
     return pxls.__pxls.reduce((o, c, i) => {
+      if (!c) return o;
       const points = o[c] || [];
       points.push(i);
       o[c] = points;
@@ -456,6 +482,7 @@ export default class Pxls {
     }, {});
   }
 
+  // TODO: validate color
   static decompress(colorMap, width, height) {
     return Object.entries(colorMap).reduce(
       (o, [color, points]) =>

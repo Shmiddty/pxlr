@@ -19,14 +19,6 @@ const initialState = {
 let hist = [];
 let hidx = 0;
 
-function removeNulls(pxls) {
-  return Object.entries(pxls)
-    .filter(([_, val]) => val !== null)
-    .reduce((o, [k, v]) => {
-      o[k] = v;
-      return o;
-    }, {});
-}
 export default function (state = initialState, action) {
   let next;
   switch (action.type) {
