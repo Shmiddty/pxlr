@@ -70,3 +70,7 @@ export function ceilEm(vector) {
 export function roundEm(vector) {
   return vector.map((v) => Math.round(v));
 }
+
+export function truncEm(vector) {
+  return vector.map((v) => Math.trunc(v));
+}

@@ -48,38 +48,25 @@ export const circle = memo((diameter) => {
  * n - number of sides/points
  * ori - the angle offset
  */
-//TODO: do side-length instead of diameter?
 export const polygon = memo((diameter, n, ori = 0) => {
   const out = [],
-    radius = diameter / 2,
-    d = (2 * Math.PI) / n;
-  const h = radius * Math.cos(d / 2);
+    radius = Math.floor(diameter / 2),
+    odd = diameter % 2,
+    // the inner angle of the right triangle formed between the center,
+    // a corner, and the midpoint of a side
+    t0 = Math.PI / n;
+  const h = Math.floor(radius) * Math.cos(t0);
+  const padding = 2 * Math.PI; // to avoid modulo issues
+  const baseOri = (3 / 2) * Math.PI + t0; // flat side down
+  const offset = baseOri + ori + padding;
 
-  for (let y = -radius; y <= radius; y++) {
-    for (let x = -radius; x <= radius; x++) {
-      const theta = Math.abs(
-        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(y, x)) % d) - d / 2
-      );
-      const R = h / Math.cos(theta);
-      if (x ** 2 + y ** 2 <= R ** 2) out.push([Math.floor(x), Math.floor(y)]);
-    }
-  }
-  return out;
-});
-
-export const poly = memo((side, n, ori) => {
-  const out = [];
-  const d = (2 * Math.PI) / n;
-  const radius = (Math.sin(d / 2) * side) / 2;
-  const h = radius * Math.cos(d / 2);
-
-  for (let y = -radius; y <= radius; y++) {
-    for (let x = -radius; x <= radius; x++) {
-      const t0 = Math.abs(
-        (((7 / 2) * Math.PI + d / 2 - ori + Math.atan2(y, x)) % d) - d / 2
-      );
-      const R = h / Math.cos(t0);
-      if (x ** 2 + y ** 2 <= R ** 2) out.push([Math.floor(x), Math.floor(y)]);
+  for (let y = -radius; y < radius + odd; y++) {
+    for (let x = -radius; x < radius + odd; x++) {
+      const vec = V.vector(x, y);
+      const theta = V.angle(vec);
+      const t1 = Math.abs(((theta + offset) % (2 * t0)) - t0);
+      const R = h / Math.cos(t1);
+      if (V.magnitude(vec) < R) out.push(V.floorEm(vec));
     }
   }
   return out;
@@ -278,9 +265,10 @@ function isEmpty(color) {
  * dimensions - [width, height]
  */
 export function fill(pxls, position, color, [width, height]) {
-  let init = pxls[pointToKey(position)];
-  return Object.assign(
-    pointsToMap(
+  let init = pxls.get(position);
+  return Pxls.union(
+    pxls,
+    Pxls.fromFlat(
       bfs(
         position,
         ([x, y]) => [
@@ -294,11 +282,11 @@ export function fill(pxls, position, color, [width, height]) {
           x < width &&
           y >= 0 &&
           y < height &&
-          pxls[pointToKey([x, y])] === init
-      ),
-      () => color
-    ),
-    Object.assign({}, pxls)
+          pxls.get([x, y]) === init
+      ).map((p) => [p, color]),
+      width,
+      height
+    )
   );
 }
 
