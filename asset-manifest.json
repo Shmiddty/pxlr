@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/pxlr/static/css/main.75b79bea.chunk.css",
+    "main.js": "/pxlr/static/js/main.47bcf0d3.chunk.js",
+    "main.js.map": "/pxlr/static/js/main.47bcf0d3.chunk.js.map",
+    "runtime-main.js": "/pxlr/static/js/runtime-main.8632998d.js",
+    "runtime-main.js.map": "/pxlr/static/js/runtime-main.8632998d.js.map",
+    "static/css/2.98a056ee.chunk.css": "/pxlr/static/css/2.98a056ee.chunk.css",
+    "static/js/2.bf2240e2.chunk.js": "/pxlr/static/js/2.bf2240e2.chunk.js",
+    "static/js/2.bf2240e2.chunk.js.map": "/pxlr/static/js/2.bf2240e2.chunk.js.map",
+    "index.html": "/pxlr/index.html",
+    "precache-manifest.c941307f02955adbf912db379218f694.js": "/pxlr/precache-manifest.c941307f02955adbf912db379218f694.js",
+    "service-worker.js": "/pxlr/service-worker.js",
+    "static/css/2.98a056ee.chunk.css.map": "/pxlr/static/css/2.98a056ee.chunk.css.map",
+    "static/css/main.75b79bea.chunk.css.map": "/pxlr/static/css/main.75b79bea.chunk.css.map",
+    "static/media/materialdesignicons.min.css": "/pxlr/static/media/materialdesignicons-webfont.7a44ea19.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8632998d.js",
+    "static/css/2.98a056ee.chunk.css",
+    "static/js/2.bf2240e2.chunk.js",
+    "static/css/main.75b79bea.chunk.css",
+    "static/js/main.47bcf0d3.chunk.js"
+  ]
+}
