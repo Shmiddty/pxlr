@@ -257,7 +257,7 @@ export class Canvas extends Component {
       modeIcon.style.height = s + "px";
 
       if (mode === Modes.dropper) {
-        modeIcon.style.background = this.props.pxls[pos] || "";
+        modeIcon.style.background = this.props.pxls.get(pos) || "";
       } else {
         modeIcon.style.background = "";
       }
