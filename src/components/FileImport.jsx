@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import chunk from "lodash/chunk";
 import makeEnum from "../util/makeEnum";
 import cn from "../util/classnames";
-import { setPxls, resize } from '../store/canvas/actions';
-import './FileImport.css';
+import { setPxls, resize } from "../store/canvas/actions";
+import "./FileImport.css";
 
 function getImage(file) {
   return new Promise((resolve, reject) => {
     try {
       const reader = new FileReader();
-      reader.addEventListener("load", function() {
+      reader.addEventListener("load", function () {
         const img = new Image();
         const b64 = this.result;
         img.onload = () => resolve(img);
@@ -25,12 +25,10 @@ function getImage(file) {
 }
 
 function getImageData(img) {
-  let can = document.createElement("canvas")
-    , ctx = can.getContext('2d')
-    , wid = img.width
-    , hei = img.height
-    ;
-
+  let can = document.createElement("canvas"),
+    ctx = can.getContext("2d"),
+    wid = img.width,
+    hei = img.height;
   can.width = wid;
   can.height = hei;
   ctx.drawImage(img, 0, 0, wid, hei);
@@ -38,42 +36,36 @@ function getImageData(img) {
 }
 
 function imageDataToPxls({ data, width, height }) {
-  return chunk(data, 4).reduce((o, [r,g,b,a], i) => {
-    let x = i % width
-      , y = Math.floor(i / width)
-      ;
+  return chunk(data, 4).reduce((o, [r, g, b, a], i) => {
+    let x = i % width,
+      y = Math.floor(i / width);
     if (a === 0) return o;
 
-    o[[x,y]] = [r,g,b,a].reduce((o, v) => 
-      o + v.toString(16).padStart(2, '0'), "#"
+    o[[x, y]] = [r, g, b, a].reduce(
+      (o, v) => o + v.toString(16).padStart(2, "0"),
+      "#"
     );
     return o;
   }, {});
 }
 
 function validateSize(size) {
-  return function(img) {
-    if (img.width > size) throw new Error("The size of the image is too damn high!");
+  return function (img) {
+    if (img.width > size)
+      throw new Error("The size of the image is too damn high!");
     return img;
-  }
+  };
 }
 
-
-const STATUS = makeEnum([
-  "ready",
-  "waiting",
-  "processing",
-  "error",
-  "success"
-]);
+const STATUS = makeEnum(["ready", "waiting", "processing", "error", "success"]);
 
 export class FileImport extends Component {
   static defaultProps = {
     waitingMessage: "Drop your file here.",
     processingMessage: "Processing your file.",
     successMessage: "Successfully processed.",
-    errorMessage: "There was an error while processing your file."
-  }
+    errorMessage: "There was an error while processing your file.",
+  };
 
   constructor(props) {
     super(props);
@@ -84,7 +76,7 @@ export class FileImport extends Component {
     this.state = { status: STATUS.ready };
   }
 
-  setStatus (status, delay = 0) {
+  setStatus(status, delay = 0) {
     if (delay) setTimeout(this.setState.bind(this, { status }), delay);
     else this.setState({ status });
   }
@@ -95,13 +87,12 @@ export class FileImport extends Component {
   componentWillUnmount() {
     window.removeEventListener("dragenter", this.handleDragEnter);
   }
- 
+
   handleDragEnter(e) {
     this.setStatus(STATUS.waiting);
   }
 
-  handleChange (se) {
-    
+  handleChange(se) {
     this.setStatus(STATUS.processing);
 
     // TODO: maybe make this a generic component some day?
@@ -111,47 +102,38 @@ export class FileImport extends Component {
     getImage(tar.files[0])
       .then(validateSize(256))
       .then(getImageData)
-      .then(img => (this.props.resize(img.width), img))
+      .then((img) => {
+        this.props.resize(img.width);
+        return img;
+      })
       .then(imageDataToPxls)
       .then(this.props.setPxls)
       .then(() => this.setStatus(STATUS.success, cleanupTime))
-      .catch(e => this.setStatus(STATUS.error, cleanupTime))
+      .catch((e) => this.setStatus(STATUS.error, cleanupTime))
       .finally(() => {
-        tar.value = '';
-        this.setStatus(STATUS.ready, cleanupTime + postCleanupTime); // TODO: icky hacky 
+        tar.value = "";
+        this.setStatus(STATUS.ready, cleanupTime + postCleanupTime); // TODO: icky hacky
       });
   }
 
   render() {
-    const {
-      waitingMessage,
-      processingMessage,
-      successMessage,
-      errorMessage
-    } = this.props;
+    const { waitingMessage, processingMessage, successMessage, errorMessage } =
+      this.props;
 
     return (
       <label
         className={cn({
-          "file-import":true,
-          [STATUS[this.state.status]]:true
+          "file-import": true,
+          [STATUS[this.state.status]]: true,
         })}
       >
-        <section className="waiting-msg">
-          {waitingMessage}
-        </section>
-        
-        <section className="processing-msg">
-          {processingMessage}
-        </section>
+        <section className="waiting-msg">{waitingMessage}</section>
 
-        <section className="success-msg">
-          {successMessage}
-        </section>
+        <section className="processing-msg">{processingMessage}</section>
 
-        <section className="error-msg">
-          {errorMessage}
-        </section>
+        <section className="success-msg">{successMessage}</section>
+
+        <section className="error-msg">{errorMessage}</section>
 
         <input
           onChange={this.handleChange}
@@ -163,7 +145,7 @@ export class FileImport extends Component {
   }
 }
 
-export default connect(null, dispatch => ({
-  setPxls: pxls => dispatch(setPxls(pxls)),
-  resize: size => dispatch(resize(size))
+export default connect(null, (dispatch) => ({
+  setPxls: (pxls) => dispatch(setPxls(pxls)),
+  resize: (size) => dispatch(resize(size)),
 }))(FileImport);
