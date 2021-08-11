@@ -49,6 +49,9 @@ export const circle = memo((diameter) => {
  * ori - the angle offset
  */
 export const polygon = memo((diameter, n, ori = 0) => {
+  // this should probably actually be [0,0]
+  if (diameter === 1) return [[-1, -1]];
+
   const out = [],
     radius = Math.floor(diameter / 2),
     odd = diameter % 2,
@@ -62,6 +65,64 @@ export const polygon = memo((diameter, n, ori = 0) => {
 
   for (let y = -radius; y < radius + odd; y++) {
     for (let x = -radius; x < radius + odd; x++) {
+      const vec = V.vector(x, y);
+      const theta = V.angle(vec);
+      const t1 = Math.abs(((theta + offset) % (2 * t0)) - t0);
+      const R = h / Math.cos(t1);
+      if (V.magnitude(vec) < R) out.push(V.floorEm(vec));
+    }
+  }
+  return out;
+});
+
+/**
+ * Return an array of points representing the pixels in a regular polygon
+ * that fits within the square of side length of <width>
+ *
+ * width - the side length of the square
+ * n - the number of sides of the polygon
+ * ori - the orientation of the polygon
+ */
+export const polySquare = memo((width, n, ori = 0) => {
+  if (width === 1) return [[-1, -1]];
+
+  if (n < 5) return poly(width, n, ori);
+  // this should be approximately correct, but will be off for smaller n
+  // should be possible to calculate the correct value for small n...
+  // the flat side will always be down and
+  // there are an even number of sides with increasing angles leading
+  // up to the widest point
+  // the number of these side pairs is found by:
+  // f(n) => Math.floor((n - 1) / 4);
+  // the polygon is comprised of a number of isocolese triangles
+  // oriented about the center
+  // the base of each triangle is the side length.
+  // the radius is unknown, but 2R should be roughly <width>.
+  return poly((width * Math.PI) / n, n, ori);
+});
+
+/**
+ * Return an array of points representing the pixels in a regular polygon
+ * with side length of <side>
+ *
+ * side - the length of each side
+ * n - the number of sides
+ * ori - the orientation
+ */
+
+//TODO: centering is sometimes off. fix it.
+// but how though?
+export const poly = memo((side, n, ori = 0) => {
+  const out = [];
+  const t0 = Math.PI / n;
+  const radius = side / 2 / Math.sin(t0);
+  const h = side / 2 / Math.tan(t0);
+  const padding = 2 * Math.PI; // to avoid modulo issues
+  const baseOri = (3 / 2) * Math.PI + t0; // flat side down
+  const offset = baseOri + ori + padding;
+
+  for (let y = -radius; y < radius; y++) {
+    for (let x = -radius; x < radius; x++) {
       const vec = V.vector(x, y);
       const theta = V.angle(vec);
       const t1 = Math.abs(((theta + offset) % (2 * t0)) - t0);

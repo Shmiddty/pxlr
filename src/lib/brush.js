@@ -1,5 +1,10 @@
 import { Shapes, Mirror } from "../const/brush";
-import { circle, polygon, subtractPoints, flipPoints } from "../lib/pxls";
+import {
+  circle,
+  polySquare as polygon,
+  subtractPoints,
+  flipPoints,
+} from "../lib/pxls";
 import { add, fAdd, rotate, scale, floorEm, roundEm } from "../lib/vectr";
 
 const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
