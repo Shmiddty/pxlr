@@ -309,7 +309,10 @@ export function flipPoints(points, vertical = false, [width, height]) {
   ]);
 }
 
-function isEmpty(color) {
+/**
+ * Returns true if the color represents an empty value.
+ */
+export function isEmpty(color) {
   return (
     color === null ||
     color === "Transparent" ||
