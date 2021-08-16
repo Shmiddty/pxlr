@@ -346,9 +346,7 @@ export function fill(pxls, position, color, [width, height]) {
           x < width &&
           y >= 0 &&
           y < height &&
-          pxls.get([x, y]) == init // eslint-disable-line eqeqeq
-        // undefined == null
-        // TODO?: properly delete null pxls
+          pxls.get([x, y]) === init
       ).map((p) => [p, color]),
       width,
       height

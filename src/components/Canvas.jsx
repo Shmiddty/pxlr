@@ -20,7 +20,11 @@ function applyBrush(position, props) {
         out[1] = color;
         break;
       case Modes.eraser:
-        out[1] = null;
+        // NOTE: it's important to use undefined here.
+        // values at indices that have been set to undefined
+        // are recognized by array iterators while still being
+        // equivalent to values at indices that have not been set
+        out[1] = undefined;
         break;
       case Modes.darken:
         if (pxlAtPos) out[1] = Color(pxlAtPos).darken(0.1).hex();
