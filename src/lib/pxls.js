@@ -118,7 +118,7 @@ export const poly = memo((side, n, ori = 0) => {
   const radius = side / 2 / Math.sin(t0);
   const h = side / 2 / Math.tan(t0);
   const padding = 2 * Math.PI; // to avoid modulo issues
-  const baseOri = (3 / 2) * Math.PI + t0; // flat side down
+  const baseOri = (7 / 2) * Math.PI + t0; // flat side down
   const offset = baseOri + ori + padding;
 
   for (let y = -radius; y < radius; y++) {
@@ -127,10 +127,21 @@ export const poly = memo((side, n, ori = 0) => {
       const theta = V.angle(vec);
       const t1 = Math.abs(((theta + offset) % (2 * t0)) - t0);
       const R = h / Math.cos(t1);
-      if (V.magnitude(vec) < R) out.push(V.floorEm(vec));
+      if (V.magnitude(vec) < R) out.push(vec);
     }
   }
-  return out;
+
+  // TODO: I think the first point in the array should always have min y, and the last point will always have max y.
+  // here's a hacky way to recenter after the fact:
+  let xs = out.map(([x]) => x),
+    ys = out.map(([, y]) => y);
+  let minX = Math.min(...xs),
+    maxX = Math.max(...xs);
+  let minY = Math.min(...ys),
+    maxY = Math.max(...ys);
+  let [ox, oy] = [maxX - (maxX - minX) / 2, maxY - (maxY - minY) / 2];
+
+  return out.map(([x, y]) => [Math.round(x - ox), Math.round(y - oy)]);
 });
 
 /**

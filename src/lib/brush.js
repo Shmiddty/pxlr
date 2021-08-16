@@ -7,8 +7,6 @@ import {
 } from "../lib/pxls";
 import { add, fAdd, rotate, scale, floorEm, roundEm } from "../lib/vectr";
 
-const adj = (N) => 2 * Math.ceil(1 / Math.cos(Math.PI / N));
-
 const numSides = {
   [Shapes.circle]: 360,
   [Shapes.circleOutline]: 360,
@@ -51,7 +49,7 @@ export const getBrush = (size, shape, stroke, orientation = 0) => {
     case Shapes.octagonOutline:
       points = subtractPoints(
         polygon(size, n, orientation),
-        polygon(Math.max(0, size - stroke * adj(n)), n, orientation)
+        polygon(Math.max(0, size - stroke * 2), n, orientation)
       );
       break;
     default:
@@ -126,7 +124,7 @@ export function getBrushPositions(
     rotationalSymmetry: rs,
   }
 ) {
-  const cAdj = scale([1, 1], (size % 2) / 2);
+  const cAdj = [0, 0]; //scale([1, 1], (size % 2) / 2);
   const pointer = add(position, add(cAdj, scale([1, 1], size / 2)));
   const brush = getBrush(size, shape, stroke).map(fAdd(pointer)).map(floorEm);
 
